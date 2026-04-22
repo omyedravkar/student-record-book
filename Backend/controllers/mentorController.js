@@ -35,4 +35,14 @@ const rejectActivity = async (req, res) => {
     }
 }
 
-module.exports = { approveActivity, rejectActivity }
+// Mentor ke liye — saari pending activities
+const getPendingActivities = async (req, res) => {
+    try {
+        const activities = await StudentRecord.find({ status: 'PENDING' })
+        res.json({ success: true, data: activities })
+    } catch (error) {
+        res.status(500).json({ success: false, message: error.message })
+    }
+}
+
+module.exports = { approveActivity, rejectActivity, getPendingActivities }

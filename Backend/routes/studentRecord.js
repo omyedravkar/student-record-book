@@ -1,12 +1,8 @@
 const express = require('express')
 const router = express.Router()
-const {
-    addActivity,
-    getMyActivities,
-    editActivity,
-    deleteActivity
-} = require('../controllers/studentRecordController')
+const { addActivity, getMyActivities, editActivity, deleteActivity, getVerifiedActivities } = require('../controllers/studentRecordController')
 
+router.get('/verified', getVerifiedActivities)
 router.get('/my', getMyActivities)
 router.post('/add', addActivity)
 router.put('/edit/:id', editActivity)

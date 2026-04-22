@@ -53,4 +53,14 @@ const deleteActivity = async (req, res) => {
     }
 }
 
-module.exports = { getMyActivities, addActivity, editActivity, deleteActivity }
+// Recruiter ke liye — sirf verified activities
+const getVerifiedActivities = async (req, res) => {
+    try {
+        const activities = await StudentRecord.find({ status: 'VERIFIED' })
+        res.json({ success: true, data: activities })
+    } catch (error) {
+        res.status(500).json({ success: false, message: error.message })
+    }
+}
+
+module.exports = { getMyActivities, addActivity, editActivity, deleteActivity, getVerifiedActivities }
