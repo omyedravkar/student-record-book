@@ -2,7 +2,7 @@ const StudentRecord = require('../models/StudentRecord')
 
 const getMyActivities = async (req, res) => {
     try {
-        const activities = await StudentRecord.find({ prn: req.body.prn })
+     const activities = await StudentRecord.find({ prn: req.query.prn })
         res.json({ success: true, data: activities })
     } catch (error) {
         res.status(500).json({ success: false, message: error.message })
