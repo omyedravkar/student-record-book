@@ -18,6 +18,10 @@ export default function App() {
         <Routes>
           <Route path="/" element={<Login />} />
           <Route path="/dashboard" element={<StudentDashboard />} />
+          <Route path="/student" element={<StudentDashboard />} />
+          <Route path="/mentor" element={<MentorDashboard />} />
+          <Route path="/admin" element={<AdminDashboard />} />
+          <Route path="/add-activity" element={<AddAchievement />} />
           <Route path="/add-achievement" element={<AddAchievement />} />
           <Route path="/admin" element={<AdminDashboard />} />
           <Route path="/mentor" element={<MentorDashboard />} />

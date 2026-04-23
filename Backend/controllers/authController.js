@@ -7,7 +7,7 @@ const login = async (req, res) => {
         // Email se user dhundo
         const user = await User.findOne({ email: req.body.email })
         if (!user) {
-            return res.status(404).json({ success: false, message: 'User nahi mila' })
+            return res.status(404).json({ success: false, message: 'User Not Found' })
         }
 
         // Password check karo
@@ -28,4 +28,31 @@ const login = async (req, res) => {
     }
 }
 
-module.exports = { login }
+
+// Register - New User
+const register = async (req, res) => {
+    try {
+        // Check karo email already exist toh nahi karta
+        const existingUser = await User.findOne({ email: req.body.email })
+        if (existingUser) {
+            return res.status(400).json({ success: false, message: 'Email already registered ' })
+        }
+
+        const user = new User({
+            prn: req.body.prn,
+            name: req.body.name,
+            email: req.body.email,
+            password: req.body.password,
+            role: req.body.role,
+            branch: req.body.branch,
+            year: req.body.year
+        })
+
+        await user.save()
+        res.json({ success: true, message: 'User Successfully Registered' })
+    } catch (error) {
+        res.status(500).json({ success: false, message: error.message })
+    }
+}
+
+module.exports = { login, register }
