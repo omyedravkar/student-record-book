@@ -12,6 +12,7 @@ function AddAchievement() {
     endDate: '',
     description: '',
   });
+  const [file, setFile] = useState(null);
 
   const handleChange = (e) =>
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -23,8 +24,6 @@ function AddAchievement() {
     }
 
     const prn = localStorage.getItem('prn');
-    console.log('PRN:', prn);
-
     if (!prn) {
       alert('Session expired. Please login again.');
       navigate('/');
@@ -36,15 +35,19 @@ function AddAchievement() {
       const end = form.endDate ? new Date(form.endDate) : new Date();
       const duration_weeks = Math.round((end - start) / (1000 * 60 * 60 * 24 * 7));
 
-      const response = await axios.post('http://localhost:5000/api/student-record/add', {
-        prn,
-        type: form.type,
-        title: form.title,
-        organisation: form.organization,
-        duration_weeks,
-        start_date: form.startDate,
-        end_date: form.endDate,
-        description: form.description,
+      const formData = new FormData();
+      formData.append('prn', prn);
+      formData.append('type', form.type);
+      formData.append('title', form.title);
+      formData.append('organisation', form.organization);
+      formData.append('duration_weeks', duration_weeks);
+      formData.append('start_date', form.startDate);
+      formData.append('end_date', form.endDate);
+      formData.append('description', form.description);
+      if (file) formData.append('document', file);
+
+      const response = await axios.post('http://localhost:5000/api/student-record/add', formData, {
+        headers: { 'Content-Type': 'multipart/form-data' }
       });
 
       if (response.data.success) {
@@ -106,6 +109,12 @@ function AddAchievement() {
               style={{ ...styles.input, height: '100px', resize: 'vertical' }}
               placeholder="Briefly describe what you did..."
               value={form.description} onChange={handleChange} />
+          </div>
+
+          <div style={styles.inputGroup}>
+            <label style={styles.label}>Upload Certificate (PDF/Image)</label>
+            <input type="file" style={styles.input} accept=".pdf,.jpg,.png"
+              onChange={(e) => setFile(e.target.files[0])} />
           </div>
 
           <div style={styles.btnRow}>

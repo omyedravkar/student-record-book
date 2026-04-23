@@ -54,6 +54,12 @@ function MentorDashboard() {
                 <p style={styles.meta}>👤 {r.prn} — 🏢 {r.organisation}</p>
                 <p style={styles.meta}>📅 {r.start_date ? new Date(r.start_date).toLocaleDateString() : 'N/A'} — {r.duration_weeks} weeks</p>
                 {r.description && <p style={styles.meta}>📝 {r.description}</p>}
+                {r.document_url && (
+                  <a href={`http://localhost:5000${r.document_url}`} target="_blank" rel="noreferrer"
+                    style={{ fontSize: '13px', color: '#1a237e', fontWeight: '600' }}>
+                    📄 View Document
+                  </a>
+                )}
               </div>
               <div style={styles.actions}>
                 <button style={styles.approveBtn} onClick={() => handleAction(r._id, 'approve')}>✅ Approve</button>

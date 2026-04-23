@@ -6,6 +6,8 @@ require('dotenv').config();
 const app = express();
 app.use(express.json());
 app.use(cors());
+const path = require('path');
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 connectDB();
 

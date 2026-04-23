@@ -20,7 +20,7 @@ const addActivity = async (req, res) => {
             start_date: req.body.start_date,
             end_date: req.body.end_date,
             description: req.body.description,
-            document_url: req.body.document_url,
+           document_url: req.file ? `/uploads/${req.file.filename}` : req.body.document_url,
             tags: req.body.tags
         })
         await activity.save()

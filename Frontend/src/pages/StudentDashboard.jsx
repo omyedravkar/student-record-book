@@ -1,112 +1,96 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
-function AddAchievement() {
+function StudentDashboard() {
   const navigate = useNavigate();
-  const [form, setForm] = useState({
-    type: 'internship',
-    title: '',
-    organization: '',
-    startDate: '',
-    endDate: '',
-    description: '',
-  });
+  const [activities, setActivities] = useState([]);
+  const [prn, setPrn] = useState('');
 
-  const handleChange = (e) =>
-    setForm({ ...form, [e.target.name]: e.target.value });
-
-  const handleSubmit = async () => {
-    if (!form.title || !form.organization || !form.startDate) {
-      alert('Please fill all required fields!');
-      return;
+  useEffect(() => {
+    const storedPrn = localStorage.getItem('prn');
+    if (storedPrn) {
+      setPrn(storedPrn);
+      fetchActivities(storedPrn);
     }
+  }, []);
 
+  const fetchActivities = async (studentPrn) => {
     try {
-      const prn = localStorage.getItem('prn');
-
-      // Calculate duration in weeks
-      const start = new Date(form.startDate);
-      const end = form.endDate ? new Date(form.endDate) : new Date();
-      const duration_weeks = Math.round((end - start) / (1000 * 60 * 60 * 24 * 7));
-
-      const response = await axios.post('http://localhost:5000/api/student-record/add', {
-        prn,
-        type: form.type,
-        title: form.title,
-        organisation: form.organization,
-        duration_weeks,
-        start_date: form.startDate,
-        end_date: form.endDate,
-        description: form.description,
-      });
-
+      const response = await axios.get(`http://localhost:5000/api/student-record/my?prn=${studentPrn}`);
       if (response.data.success) {
-        alert('Achievement submitted for verification! ✅');
-        navigate('/my-activities');
+        setActivities(response.data.data);
       }
     } catch (error) {
-      alert(error.response?.data?.message || 'Submission failed');
+      console.log('Error fetching activities:', error);
     }
   };
 
   return (
     <div>
       <div style={styles.container}>
-        <div style={styles.card}>
-          <h2 style={styles.title}>Add New Achievement</h2>
-          <p style={styles.subtitle}>Fill in the details — your mentor will verify it</p>
-
-          <div style={styles.row}>
-            <div style={styles.inputGroup}>
-              <label style={styles.label}>Type *</label>
-              <select name="type" style={styles.input} value={form.type} onChange={handleChange}>
-                <option value="internship">Internship</option>
-                <option value="project">Project</option>
-                <option value="certificate">Certificate</option>
-                <option value="activity">Extracurricular</option>
-              </select>
-            </div>
-
-            <div style={styles.inputGroup}>
-              <label style={styles.label}>Title *</label>
-              <input name="title" style={styles.input} placeholder="e.g. Web Dev Intern"
-                value={form.title} onChange={handleChange} />
-            </div>
+        <div style={styles.profileCard}>
+          <div style={styles.avatar}>👤</div>
+          <div>
+            <h2 style={styles.name}>{localStorage.getItem('name') || 'Student'}</h2>
+            <p style={styles.info}>Roll No: {prn}</p>
           </div>
+        </div>
 
-          <div style={styles.inputGroup}>
-            <label style={styles.label}>Organization / Platform *</label>
-            <input name="organization" style={styles.input} placeholder="e.g. Google, Coursera"
-              value={form.organization} onChange={handleChange} />
+        <div style={styles.statsRow}>
+          <div style={styles.statCard}>
+            <h3 style={styles.statValue}>{activities.length}</h3>
+            <p style={styles.statLabel}>Total Activities</p>
           </div>
-
-          <div style={styles.row}>
-            <div style={styles.inputGroup}>
-              <label style={styles.label}>Start Date *</label>
-              <input name="startDate" type="date" style={styles.input}
-                value={form.startDate} onChange={handleChange} />
-            </div>
-
-            <div style={styles.inputGroup}>
-              <label style={styles.label}>End Date</label>
-              <input name="endDate" type="date" style={styles.input}
-                value={form.endDate} onChange={handleChange} />
-            </div>
+          <div style={styles.statCard}>
+            <h3 style={styles.statValue}>{activities.filter(a => a.status === 'VERIFIED').length}</h3>
+            <p style={styles.statLabel}>Verified</p>
           </div>
-
-          <div style={styles.inputGroup}>
-            <label style={styles.label}>Description</label>
-            <textarea name="description"
-              style={{ ...styles.input, height: '100px', resize: 'vertical' }}
-              placeholder="Briefly describe what you did..."
-              value={form.description} onChange={handleChange} />
+          <div style={styles.statCard}>
+            <h3 style={styles.statValue}>{activities.filter(a => a.status === 'PENDING').length}</h3>
+            <p style={styles.statLabel}>Pending</p>
           </div>
+        </div>
 
-          <div style={styles.btnRow}>
-            <button style={styles.cancelBtn} onClick={() => navigate('/student')}>Cancel</button>
-            <button style={styles.submitBtn} onClick={handleSubmit}>Submit for Verification</button>
+        <div style={styles.section}>
+          <div style={styles.sectionHeader}>
+            <h3>My Achievements</h3>
+            <button style={styles.addBtn} onClick={() => navigate('/add-activity')}>
+              + Add New
+            </button>
           </div>
+          {activities.length === 0 ? (
+            <p style={{ color: '#888', textAlign: 'center', padding: '20px' }}>No activities yet. Add your first one!</p>
+          ) : (
+            <table style={styles.table}>
+              <thead>
+                <tr style={styles.tableHead}>
+                  <th style={styles.th}>Type</th>
+                  <th style={styles.th}>Title</th>
+                  <th style={styles.th}>Organisation</th>
+                  <th style={styles.th}>Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                {activities.map((a, i) => (
+                  <tr key={i} style={styles.tableRow}>
+                    <td style={styles.td}>{a.type}</td>
+                    <td style={styles.td}>{a.title}</td>
+                    <td style={styles.td}>{a.organisation}</td>
+                    <td style={styles.td}>
+                      <span style={{
+                        ...styles.badge,
+                        backgroundColor: a.status === 'VERIFIED' ? '#e8f5e9' : a.status === 'REJECTED' ? '#ffebee' : '#fff8e1',
+                        color: a.status === 'VERIFIED' ? '#2e7d32' : a.status === 'REJECTED' ? '#c62828' : '#f57f17',
+                      }}>
+                        {a.status}
+                      </span>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          )}
         </div>
       </div>
     </div>
@@ -114,17 +98,24 @@ function AddAchievement() {
 }
 
 const styles = {
-  container: { padding: '30px', display: 'flex', justifyContent: 'center' },
-  card: { backgroundColor: 'white', borderRadius: '12px', padding: '35px', width: '650px', boxShadow: '0 2px 10px rgba(0,0,0,0.08)' },
-  title: { color: '#1a237e', marginBottom: '5px' },
-  subtitle: { color: '#888', fontSize: '13px', marginBottom: '25px' },
-  row: { display: 'flex', gap: '20px' },
-  inputGroup: { flex: 1, marginBottom: '18px' },
-  label: { display: 'block', marginBottom: '6px', fontWeight: '600', color: '#444', fontSize: '14px' },
-  input: { width: '100%', padding: '10px 14px', border: '1px solid #ddd', borderRadius: '8px', fontSize: '14px' },
-  btnRow: { display: 'flex', gap: '15px', justifyContent: 'flex-end', marginTop: '10px' },
-  cancelBtn: { padding: '10px 24px', border: '1px solid #ccc', borderRadius: '8px', backgroundColor: 'white', fontSize: '14px' },
-  submitBtn: { padding: '10px 24px', backgroundColor: '#1a237e', color: 'white', border: 'none', borderRadius: '8px', fontSize: '14px', fontWeight: '600' },
+  container: { padding: '30px', maxWidth: '900px', margin: '0 auto' },
+  profileCard: { backgroundColor: 'white', borderRadius: '12px', padding: '25px', display: 'flex', alignItems: 'center', gap: '20px', boxShadow: '0 2px 10px rgba(0,0,0,0.08)', marginBottom: '25px' },
+  avatar: { fontSize: '60px' },
+  name: { color: '#1a237e', fontSize: '22px' },
+  info: { color: '#666', fontSize: '14px', marginTop: '4px' },
+  statsRow: { display: 'flex', gap: '20px', marginBottom: '25px' },
+  statCard: { flex: 1, backgroundColor: 'white', borderRadius: '12px', padding: '20px', textAlign: 'center', boxShadow: '0 2px 10px rgba(0,0,0,0.08)' },
+  statValue: { fontSize: '28px', color: '#1a237e' },
+  statLabel: { color: '#888', fontSize: '13px', marginTop: '5px' },
+  section: { backgroundColor: 'white', borderRadius: '12px', padding: '25px', boxShadow: '0 2px 10px rgba(0,0,0,0.08)' },
+  sectionHeader: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '15px' },
+  addBtn: { backgroundColor: '#1a237e', color: 'white', border: 'none', borderRadius: '8px', padding: '8px 16px', fontSize: '14px' },
+  table: { width: '100%', borderCollapse: 'collapse' },
+  tableHead: { backgroundColor: '#e8eaf6' },
+  th: { padding: '12px', textAlign: 'left', fontSize: '14px', color: '#1a237e' },
+  tableRow: { borderBottom: '1px solid #f0f0f0' },
+  td: { padding: '12px', fontSize: '14px', color: '#444' },
+  badge: { padding: '4px 10px', borderRadius: '20px', fontSize: '12px', fontWeight: '600' },
 };
 
-export default AddAchievement;
+export default StudentDashboard;
