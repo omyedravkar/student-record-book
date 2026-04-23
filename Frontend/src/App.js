@@ -36,7 +36,7 @@ function Layout() {
           <Route path="/profile" element={<ProtectedRoute element={<Profile />} allowedRole="student" />} />
           <Route path="/mentor" element={<ProtectedRoute element={<MentorDashboard />} allowedRole="mentor" />} />
           <Route path="/admin" element={<ProtectedRoute element={<AdminDashboard />} allowedRole="admin" />} />
-          <Route path="/rankings" element={<ProtectedRoute element={<Rankings />} allowedRole="placement" />} />
+          <Route path="/rankings" element={<ProtectedRoute element={<Rankings />} allowedRole="admin" />} />
         </Routes>
       </div>
     </>

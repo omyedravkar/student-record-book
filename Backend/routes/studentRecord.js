@@ -6,7 +6,8 @@ const {
     getMyActivities,
     editActivity,
     deleteActivity,
-    getVerifiedActivities
+    getVerifiedActivities,
+    searchStudents
 } = require('../controllers/studentRecordController')
 
 router.get('/my', getMyActivities)
@@ -14,5 +15,6 @@ router.post('/add', upload.single('document'), addActivity)
 router.put('/edit/:id', editActivity)
 router.delete('/delete/:id', deleteActivity)
 router.get('/verified', getVerifiedActivities)
+router.get('/search', searchStudents)
 
 module.exports = router

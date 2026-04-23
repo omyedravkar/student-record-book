@@ -13,7 +13,7 @@ const generateTags = (record) => {
 
     if(record.organisation)
     {
-        tags.push(record.organisation.toLowerCase());   
+      tags.push(record.organisation.toLowerCase().replace(/\s+/g, '-').trim());  
     }
 
 if(record.duration_weeks)
@@ -28,7 +28,7 @@ if(record.duration_weeks)
     {
         tags.push('long-term');
     }
-``
+
     if(record.duration_weeks >= 4 && record.duration_weeks < 8)
     {
         tags.push('mid-term');
@@ -57,3 +57,4 @@ if (record.title) {
 };
 
 module.exports = generateTags;
+
