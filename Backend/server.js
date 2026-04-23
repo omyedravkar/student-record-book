@@ -14,13 +14,15 @@ connectDB();
 const authRoutes = require('./routes/auth');
 const studentRecordRoutes = require('./routes/studentRecord');
 const mentorRoutes = require('./routes/mentor');
+const User = require('./models/User');
+const recruiterRoutes = require('./routes/recruiter')
 
 app.use('/api/auth', authRoutes);
 app.use('/api/student-record', studentRecordRoutes);
 app.use('/api/mentor', mentorRoutes);
+app.use('/api/recruiter', recruiterRoutes)
 
 // Temp test route to add user
-const User = require('./models/User');
 app.post('/test/adduser', async (req, res) => {
   try {
     const user = new User(req.body);

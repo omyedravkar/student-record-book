@@ -35,7 +35,7 @@ const erpData = [
         semester: 4,
         cgpa: 8.4,
         attendance: 78,
-        marks: {=
+        marks: {
             maths: 70,
             dsa: 75,
             os: 80,
