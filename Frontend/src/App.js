@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate, useLocation } from "react-router-dom";
 import Navbar from "./components/Navbar.jsx";
 
 import Login from "./pages/Login.jsx";
@@ -10,26 +10,43 @@ import Profile from "./pages/Profile.jsx";
 import ActivityList from "./pages/ActivityList.jsx";
 import Rankings from "./pages/Rankings.jsx";
 
+function ProtectedRoute({ element, allowedRole }) {
+  const role = localStorage.getItem('role');
+  const token = localStorage.getItem('token');
+  if (!token) return <Navigate to="/" />;
+  if (allowedRole && role !== allowedRole) return <Navigate to="/" />;
+  return element;
+}
+
+function Layout() {
+  const location = useLocation();
+  const isLogin = location.pathname === '/';
+
+  return (
+    <>
+      {!isLogin && <Navbar />}
+      <div style={{ maxWidth: 1100, margin: "0 auto", padding: isLogin ? "0" : "2rem 1rem" }}>
+        <Routes>
+          <Route path="/" element={<Login />} />
+          <Route path="/student" element={<ProtectedRoute element={<StudentDashboard />} allowedRole="student" />} />
+          <Route path="/dashboard" element={<ProtectedRoute element={<StudentDashboard />} allowedRole="student" />} />
+          <Route path="/add-activity" element={<ProtectedRoute element={<AddAchievement />} allowedRole="student" />} />
+          <Route path="/add-achievement" element={<ProtectedRoute element={<AddAchievement />} allowedRole="student" />} />
+          <Route path="/activities" element={<ProtectedRoute element={<ActivityList />} allowedRole="student" />} />
+          <Route path="/profile" element={<ProtectedRoute element={<Profile />} allowedRole="student" />} />
+          <Route path="/mentor" element={<ProtectedRoute element={<MentorDashboard />} allowedRole="mentor" />} />
+          <Route path="/admin" element={<ProtectedRoute element={<AdminDashboard />} allowedRole="admin" />} />
+          <Route path="/rankings" element={<ProtectedRoute element={<Rankings />} allowedRole="placement" />} />
+        </Routes>
+      </div>
+    </>
+  );
+}
+
 export default function App() {
   return (
     <BrowserRouter>
-      <Navbar />   
-      <div style={{ maxWidth: 1100, margin: "0 auto", padding: "2rem 1rem" }}>
-        <Routes>
-          <Route path="/" element={<Login />} />
-          <Route path="/dashboard" element={<StudentDashboard />} />
-          <Route path="/student" element={<StudentDashboard />} />
-          <Route path="/mentor" element={<MentorDashboard />} />
-          <Route path="/admin" element={<AdminDashboard />} />
-          <Route path="/add-activity" element={<AddAchievement />} />
-          <Route path="/add-achievement" element={<AddAchievement />} />
-          <Route path="/admin" element={<AdminDashboard />} />
-          <Route path="/mentor" element={<MentorDashboard />} />
-          <Route path="/profile" element={<Profile />} />
-          <Route path="/activities" element={<ActivityList />} />
-          <Route path="/rankings" element={<Rankings />} />
-        </Routes>
-      </div>
+      <Layout />
     </BrowserRouter>
   );
 }
