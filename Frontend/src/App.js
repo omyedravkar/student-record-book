@@ -9,6 +9,7 @@ import MentorDashboard from "./pages/MentorDashboard.jsx";
 import Profile from "./pages/Profile.jsx";
 import ActivityList from "./pages/ActivityList.jsx";
 import Rankings from "./pages/Rankings.jsx";
+import RecruiterSearch from "./pages/RecruiterSearch";
 
 function ProtectedRoute({ element, allowedRole }) {
   const role = localStorage.getItem('role');
@@ -37,6 +38,7 @@ function Layout() {
           <Route path="/mentor" element={<ProtectedRoute element={<MentorDashboard />} allowedRole="mentor" />} />
           <Route path="/admin" element={<ProtectedRoute element={<AdminDashboard />} allowedRole="admin" />} />
           <Route path="/rankings" element={<ProtectedRoute element={<Rankings />} allowedRole="admin" />} />
+          <Route path="/recruiter" element={<RecruiterSearch />} />
         </Routes>
       </div>
     </>
