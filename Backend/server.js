@@ -16,10 +16,12 @@ const studentRecordRoutes = require('./routes/studentRecord');
 const mentorRoutes = require('./routes/mentor');
 const User = require('./models/User');
 const recruiterRoutes = require('./routes/recruiter')
+const erpRoutes = require('./routes/erp')
 
 app.use('/api/auth', authRoutes);
 app.use('/api/student-record', studentRecordRoutes);
 app.use('/api/mentor', mentorRoutes);
+app.use('/api/erp', erpRoutes)
 app.use('/api/recruiter', recruiterRoutes)
 
 // Temp test route to add user

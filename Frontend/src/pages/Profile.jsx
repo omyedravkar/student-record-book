@@ -1,16 +1,23 @@
+import { useState, useEffect } from 'react';
+import axios from 'axios';
+
 export default function Profile() {
-  const student = {
-    name: "Apurva Uike",
-    rollNo: "246100029",
-    email: "apurva@college.edu",
-    phone: "9876543210",
-    branch: "Information Technology",
-    year: "Second Year",
-    cgpa: 8.75,
-    attendance: 87,
-    dob: "2003-05-14",
-    mentor: "Prof. R. Sharma",
-  };
+  const [student, setStudent] = useState(null)
+
+  useEffect(() => {
+    const prn = localStorage.getItem('prn')
+    const token = localStorage.getItem('token')
+    
+    axios.get(`http://localhost:5000/api/erp/student/${prn}`, {
+      headers: { Authorization: `Bearer ${token}` }
+    })
+    .then(res => {
+      if (res.data.success) setStudent(res.data.data)
+    })
+    .catch(err => console.log(err))
+  }, [])
+
+  if (!student) return <div style={{padding: '2rem'}}>Loading...</div>
 
   const field = (label, value) => (
     <div style={{ display: "flex", padding: "10px 0", borderBottom: "0.5px solid #eee" }}>
