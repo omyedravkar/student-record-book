@@ -28,6 +28,7 @@ function Login() {
         if (role === 'student') navigate('/student');
         else if (role === 'mentor') navigate('/mentor');
         else if (role === 'admin') navigate('/admin');
+        else if (role === 'placement') navigate('/recruiter');
       }
     } catch (error) {
       alert(error.response?.data?.message || 'Login failed');

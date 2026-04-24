@@ -17,7 +17,8 @@ const adminLinks = [
 ];
 
 const placementLinks = [
-  { to: "/rankings", label: "Rankings" },
+    { to: "/rankings", label: "Rankings" },
+    { to: "/recruiter", label: "Recruiter Search" },
 ];
 
 export default function Navbar() {

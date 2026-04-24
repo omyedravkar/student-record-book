@@ -15,7 +15,10 @@ function ProtectedRoute({ element, allowedRole }) {
   const role = localStorage.getItem('role');
   const token = localStorage.getItem('token');
   if (!token) return <Navigate to="/" />;
-  if (allowedRole && role !== allowedRole) return <Navigate to="/" />;
+  if (allowedRole) {
+  const allowed = Array.isArray(allowedRole) ? allowedRole : [allowedRole]
+  if (!allowed.includes(role)) return <Navigate to="/" />
+}
   return element;
 }
 
@@ -37,7 +40,7 @@ function Layout() {
           <Route path="/profile" element={<ProtectedRoute element={<Profile />} allowedRole="student" />} />
           <Route path="/mentor" element={<ProtectedRoute element={<MentorDashboard />} allowedRole="mentor" />} />
           <Route path="/admin" element={<ProtectedRoute element={<AdminDashboard />} allowedRole="admin" />} />
-          <Route path="/rankings" element={<ProtectedRoute element={<Rankings />} allowedRole="admin" />} />
+          <Route path="/rankings" element={<ProtectedRoute element={<Rankings />} allowedRole={["admin", "placement"]} />} />
           <Route path="/recruiter" element={<RecruiterSearch />} />
         </Routes>
       </div>

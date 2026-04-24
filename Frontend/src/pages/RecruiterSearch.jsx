@@ -83,6 +83,7 @@ export default function RecruiterSearch() {
                   <th style={styles.th}>Title</th>
                   <th style={styles.th}>Organisation</th>
                   <th style={styles.th}>Status</th>
+                  <th style={styles.th}>CGPA</th>
                 </tr>
               </thead>
               <tbody>
@@ -93,7 +94,11 @@ export default function RecruiterSearch() {
                     <td style={styles.td}>{r.title}</td>
                     <td style={styles.td}>{r.organisation || '-'}</td>
                     <td style={styles.td}>
-                      <span style={{ color: 'green', fontWeight: 600 }}>{r.status}</span>
+                    <td style={styles.td}>
+                    <span style={{ color: 'green', fontWeight: 600 }}>{r.status}</span>
+                    </td>
+                    <td style={styles.td}>{r.cgpa || '-'}</td>
+                    {/* <span style={{ color: 'green', fontWeight: 600 }}>{r.status}</span> */}
                     </td>
                   </tr>
                 ))}

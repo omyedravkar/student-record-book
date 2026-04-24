@@ -38,7 +38,14 @@ activities.sort((a, b) => {
     return (studentB?.cgpa || 0) - (studentA?.cgpa || 0)
 })
 
-        res.json({ success: true, data: activities })
+    const result = activities.map(a => {
+    const student = erpData.find(s => s.prn === a.prn)
+    return {
+        ...a._doc,
+        cgpa: student ? student.cgpa : 'N/A'
+    }
+})
+res.json({ success: true, data: result })
 
     } catch (error) {
         res.status(500).json({ success: false, message: error.message })
