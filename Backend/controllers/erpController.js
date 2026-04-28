@@ -44,7 +44,7 @@ const erpData = [
     }
 ]
 
-// PRN se student ka ERP data fetch karo
+// PRN se student ka ERP data fetch karna 
 const getErpData = async (req, res) => {
     try {
         const student = erpData.find(s => s.prn === req.params.prn)

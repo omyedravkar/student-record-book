@@ -5,6 +5,8 @@ import axios from 'axios';
 function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [focused, setFocused] = useState('');
   const navigate = useNavigate();
 
   const handleLogin = async () => {
@@ -12,6 +14,7 @@ function Login() {
       alert('Please enter email and password!');
       return;
     }
+    setLoading(true);
     try {
       const response = await axios.post('http://localhost:5000/api/auth/login', {
         email,
@@ -32,42 +35,158 @@ function Login() {
       }
     } catch (error) {
       alert(error.response?.data?.message || 'Login failed');
+    } finally {
+      setLoading(false);
     }
   };
 
+  const handleKeyDown = (e) => {
+    if (e.key === 'Enter') handleLogin();
+  };
+
   return (
-    <div style={styles.container}>
+    <div style={styles.page}>
       <div style={styles.card}>
-        <h2 style={styles.title}>📘 Student Record Book</h2>
-        <p style={styles.subtitle}>Walchand College of Engineering, Sangli</p>
 
-        <div style={styles.inputGroup}>
+        <div style={styles.header}>
+          <div style={styles.dot} />
+          <h2 style={styles.title}>Student Record Book</h2>
+          <p style={styles.subtitle}>Walchand College of Engineering, Sangli</p>
+        </div>
+
+        <div style={styles.divider} />
+
+        <div style={styles.fieldGroup}>
           <label style={styles.label}>Email</label>
-          <input style={styles.input} type="email" placeholder="Enter your college email"
-            value={email} onChange={(e) => setEmail(e.target.value)} />
+          <input
+            style={{
+              ...styles.input,
+              border: focused === 'email' ? '1.5px solid #1a237e' : '1.5px solid #e0e0e0',
+            }}
+            type="email"
+            placeholder="Enter your college email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            onFocus={() => setFocused('email')}
+            onBlur={() => setFocused('')}
+            onKeyDown={handleKeyDown}
+          />
         </div>
 
-        <div style={styles.inputGroup}>
+        <div style={styles.fieldGroup}>
           <label style={styles.label}>Password</label>
-          <input style={styles.input} type="password" placeholder="Enter your password"
-            value={password} onChange={(e) => setPassword(e.target.value)} />
+          <input
+            style={{
+              ...styles.input,
+              border: focused === 'password' ? '1.5px solid #1a237e' : '1.5px solid #e0e0e0',
+            }}
+            type="password"
+            placeholder="Enter your password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            onFocus={() => setFocused('password')}
+            onBlur={() => setFocused('')}
+            onKeyDown={handleKeyDown}
+          />
         </div>
 
-        <button style={styles.button} onClick={handleLogin}>Login</button>
+        <button
+          style={{
+            ...styles.button,
+            opacity: loading ? 0.75 : 1,
+            cursor: loading ? 'not-allowed' : 'pointer',
+          }}
+          onClick={handleLogin}
+          disabled={loading}
+        >
+          {loading ? 'Signing in...' : 'Login'}
+        </button>
+
       </div>
     </div>
   );
 }
 
 const styles = {
-  container: { minHeight: '100vh', display: 'flex', justifyContent: 'center', alignItems: 'center', backgroundColor: '#e8eaf6' },
-  card: { backgroundColor: 'white', padding: '40px', borderRadius: '12px', boxShadow: '0 4px 20px rgba(0,0,0,0.1)', width: '380px' },
-  title: { textAlign: 'center', color: '#1a237e', marginBottom: '5px' },
-  subtitle: { textAlign: 'center', color: '#888', fontSize: '13px', marginBottom: '25px' },
-  inputGroup: { marginBottom: '18px' },
-  label: { display: 'block', marginBottom: '6px', fontWeight: '600', color: '#444' },
-  input: { width: '100%', padding: '10px 14px', border: '1px solid #ccc', borderRadius: '8px', fontSize: '14px', outline: 'none' },
-  button: { width: '100%', padding: '12px', backgroundColor: '#1a237e', color: 'white', border: 'none', borderRadius: '8px', fontSize: '16px', fontWeight: '600', marginTop: '8px' },
+  page: {
+    minHeight: '100vh',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#f0f2f8',
+    fontFamily: "'Segoe UI', sans-serif",
+  },
+  card: {
+    backgroundColor: '#ffffff',
+    padding: '40px 36px',
+    borderRadius: 14,
+    boxShadow: '0 2px 24px rgba(0,0,0,0.08)',
+    width: 380,
+  },
+  header: {
+    textAlign: 'center',
+    marginBottom: 20,
+  },
+  dot: {
+    width: 10,
+    height: 10,
+    borderRadius: '50%',
+    backgroundColor: '#1a237e',
+    margin: '0 auto 14px',
+  },
+  title: {
+    margin: 0,
+    marginBottom: 6,
+    fontSize: 20,
+    fontWeight: 700,
+    color: '#1a237e',
+    letterSpacing: '-0.2px',
+  },
+  subtitle: {
+    margin: 0,
+    fontSize: 12,
+    color: '#9e9e9e',
+    letterSpacing: 0.1,
+  },
+  divider: {
+    height: 1,
+    backgroundColor: '#f0f0f0',
+    margin: '20px 0',
+  },
+  fieldGroup: {
+    marginBottom: 16,
+  },
+  label: {
+    display: 'block',
+    fontSize: 13,
+    fontWeight: 600,
+    color: '#444',
+    marginBottom: 6,
+  },
+  input: {
+    width: '100%',
+    padding: '10px 13px',
+    borderRadius: 8,
+    fontSize: 14,
+    outline: 'none',
+    backgroundColor: '#fafafa',
+    color: '#1a1a1a',
+    transition: 'border 0.15s',
+    boxSizing: 'border-box',
+  },
+  button: {
+    width: '100%',
+    padding: '11px',
+    backgroundColor: '#1a237e',
+    color: '#ffffff',
+    border: 'none',
+    borderRadius: 8,
+    fontSize: 15,
+    fontWeight: 600,
+    marginTop: 8,
+    letterSpacing: 0.2,
+    transition: 'opacity 0.15s',
+  },
 };
 
 export default Login;

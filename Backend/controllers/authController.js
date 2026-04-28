@@ -10,7 +10,7 @@ const login = async (req, res) => {
             return res.status(404).json({ success: false, message: 'User Not Found' })
         }
 
-        // Password check karo
+        // Password checker
         if (req.body.password !== user.password) {
             return res.status(401).json({ success: false, message: 'Wrong password' })
         }

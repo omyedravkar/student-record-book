@@ -17,7 +17,7 @@ export default function ActivityList() {
 
   const fetchActivities = async (prn) => {
     try {
-     const response = await axios.get(`http://localhost:5000/api/student-record/my?prn=${prn}`);
+      const response = await axios.get(`http://localhost:5000/api/student-record/my?prn=${prn}`);
       if (response.data.success) {
         setActivities(response.data.data);
       }
@@ -27,33 +27,45 @@ export default function ActivityList() {
   };
 
   return (
-    <div>
-      <h2 style={{ color: "#1a237e" }}>My Activities</h2>
-      <div style={{ background: "#fff", borderRadius: 12, border: "0.5px solid #e0e0e0", overflow: "hidden" }}>
+    <div style={styles.page}>
+
+      <div style={styles.header}>
+        <h2 style={styles.title}>My Activities</h2>
+        <span style={styles.count}>{activities.length} total</span>
+      </div>
+
+      <div style={styles.card}>
         {activities.length === 0 ? (
-          <p style={{ padding: '20px', color: '#888', textAlign: 'center' }}>No activities yet.</p>
+          <p style={styles.empty}>No activities yet.</p>
         ) : (
-          <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 14 }}>
+          <table style={styles.table}>
             <thead>
-              <tr style={{ background: "#f5f5f5" }}>
-                <th style={th}>Type</th>
-                <th style={th}>Title</th>
-                <th style={th}>Organisation</th>
-                <th style={th}>Status</th>
+              <tr>
+                <th style={styles.th}>Type</th>
+                <th style={styles.th}>Title</th>
+                <th style={styles.th}>Organisation</th>
+                <th style={styles.th}>Status</th>
               </tr>
             </thead>
             <tbody>
               {activities.map((a, i) => (
-                <tr key={i} style={{ borderTop: "0.5px solid #eee" }}>
-                  <td style={td}>{a.type}</td>
-                  <td style={{ ...td, fontWeight: 500 }}>{a.title}</td>
-                  <td style={td}>{a.organisation}</td>
-                  <td style={td}>
+                <tr key={i} style={styles.tr}>
+                  <td style={styles.td}>
+                    <span style={styles.typeTag}>{a.type}</span>
+                  </td>
+                  <td style={{ ...styles.td, fontWeight: 600, color: '#222' }}>{a.title}</td>
+                  <td style={{ ...styles.td, color: '#888' }}>{a.organisation}</td>
+                  <td style={styles.td}>
                     <span style={{
-                      padding: "3px 10px", borderRadius: 20, fontSize: 12, fontWeight: 500,
-                      background: STATUS_COLORS[a.status]?.bg,
-                      color: STATUS_COLORS[a.status]?.color
-                    }}>{a.status}</span>
+                      padding: '4px 10px',
+                      borderRadius: 20,
+                      fontSize: 12,
+                      fontWeight: 600,
+                      backgroundColor: STATUS_COLORS[a.status]?.bg,
+                      color: STATUS_COLORS[a.status]?.color,
+                    }}>
+                      {a.status}
+                    </span>
                   </td>
                 </tr>
               ))}
@@ -61,9 +73,77 @@ export default function ActivityList() {
           </table>
         )}
       </div>
+
     </div>
   );
 }
 
-const th = { padding: "12px 16px", textAlign: "left", fontWeight: 500, fontSize: 13, color: "#555" };
-const td = { padding: "12px 16px", color: "#333" };
+const styles = {
+  page: {
+    padding: '28px 24px',
+    maxWidth: 900,
+    margin: '0 auto',
+    fontFamily: "'Segoe UI', sans-serif",
+  },
+  header: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: 12,
+    marginBottom: 20,
+  },
+  title: {
+    margin: 0,
+    fontSize: 20,
+    fontWeight: 700,
+    color: '#1a237e',
+  },
+  count: {
+    fontSize: 13,
+    color: '#aaa',
+    fontWeight: 500,
+  },
+  card: {
+    backgroundColor: '#fff',
+    borderRadius: 12,
+    boxShadow: '0 1px 12px rgba(0,0,0,0.07)',
+    overflow: 'hidden',
+  },
+  empty: {
+    padding: '32px',
+    color: '#aaa',
+    textAlign: 'center',
+    fontSize: 14,
+  },
+  table: {
+    width: '100%',
+    borderCollapse: 'collapse',
+  },
+  th: {
+    padding: '11px 16px',
+    textAlign: 'left',
+    fontSize: 11,
+    fontWeight: 600,
+    color: '#aaa',
+    textTransform: 'uppercase',
+    letterSpacing: 0.5,
+    borderBottom: '1px solid #f0f0f0',
+  },
+  tr: {
+    borderBottom: '1px solid #f7f7f7',
+  },
+  td: {
+    padding: '13px 16px',
+    fontSize: 14,
+    color: '#333',
+    verticalAlign: 'middle',
+  },
+  typeTag: {
+    backgroundColor: '#e8eaf6',
+    color: '#3949ab',
+    padding: '3px 10px',
+    borderRadius: 20,
+    fontSize: 12,
+    fontWeight: 600,
+    textTransform: 'capitalize',
+  },
+};

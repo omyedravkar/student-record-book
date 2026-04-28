@@ -13,6 +13,7 @@ function AddAchievement() {
     description: '',
   });
   const [file, setFile] = useState(null);
+  const [loading, setLoading] = useState(false);
 
   const handleChange = (e) =>
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -30,6 +31,7 @@ function AddAchievement() {
       return;
     }
 
+    setLoading(true);
     try {
       const start = new Date(form.startDate);
       const end = form.endDate ? new Date(form.endDate) : new Date();
@@ -51,94 +53,205 @@ function AddAchievement() {
       });
 
       if (response.data.success) {
-        alert('Achievement submitted for verification! ✅');
+        alert('Achievement submitted for verification!');
         navigate('/activities');
       }
     } catch (error) {
       alert(error.response?.data?.message || 'Submission failed');
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
-    <div>
-      <div style={styles.container}>
-        <div style={styles.card}>
+    <div style={styles.page}>
+      <div style={styles.card}>
+
+        <div style={styles.cardHeader}>
           <h2 style={styles.title}>Add New Achievement</h2>
           <p style={styles.subtitle}>Fill in the details — your mentor will verify it</p>
+        </div>
 
-          <div style={styles.row}>
-            <div style={styles.inputGroup}>
-              <label style={styles.label}>Type *</label>
-              <select name="type" style={styles.input} value={form.type} onChange={handleChange}>
-                <option value="internship">Internship</option>
-                <option value="project">Project</option>
-                <option value="certificate">Certificate</option>
-                <option value="activity">Extracurricular</option>
-              </select>
-            </div>
+        <div style={styles.divider} />
 
-            <div style={styles.inputGroup}>
-              <label style={styles.label}>Title *</label>
-              <input name="title" style={styles.input} placeholder="e.g. Web Dev Intern"
-                value={form.title} onChange={handleChange} />
-            </div>
+        <div style={styles.row}>
+          <div style={styles.field}>
+            <label style={styles.label}>Type <span style={styles.req}>*</span></label>
+            <select name="type" style={styles.input} value={form.type} onChange={handleChange}>
+              <option value="internship">Internship</option>
+              <option value="project">Project</option>
+              <option value="certificate">Certificate</option>
+              <option value="activity">Extracurricular</option>
+            </select>
           </div>
 
-          <div style={styles.inputGroup}>
-            <label style={styles.label}>Organization / Platform *</label>
-            <input name="organization" style={styles.input} placeholder="e.g. Google, Coursera"
-              value={form.organization} onChange={handleChange} />
-          </div>
-
-          <div style={styles.row}>
-            <div style={styles.inputGroup}>
-              <label style={styles.label}>Start Date *</label>
-              <input name="startDate" type="date" style={styles.input}
-                value={form.startDate} onChange={handleChange} />
-            </div>
-            <div style={styles.inputGroup}>
-              <label style={styles.label}>End Date</label>
-              <input name="endDate" type="date" style={styles.input}
-                value={form.endDate} onChange={handleChange} />
-            </div>
-          </div>
-
-          <div style={styles.inputGroup}>
-            <label style={styles.label}>Description</label>
-            <textarea name="description"
-              style={{ ...styles.input, height: '100px', resize: 'vertical' }}
-              placeholder="Briefly describe what you did..."
-              value={form.description} onChange={handleChange} />
-          </div>
-
-          <div style={styles.inputGroup}>
-            <label style={styles.label}>Upload Certificate (PDF/Image)</label>
-            <input type="file" style={styles.input} accept=".pdf,.jpg,.png"
-              onChange={(e) => setFile(e.target.files[0])} />
-          </div>
-
-          <div style={styles.btnRow}>
-            <button style={styles.cancelBtn} onClick={() => navigate('/activities')}>Cancel</button>
-            <button style={styles.submitBtn} onClick={handleSubmit}>Submit for Verification</button>
+          <div style={styles.field}>
+            <label style={styles.label}>Title <span style={styles.req}>*</span></label>
+            <input name="title" style={styles.input} placeholder="e.g. Web Dev Intern"
+              value={form.title} onChange={handleChange} />
           </div>
         </div>
+
+        <div style={styles.field}>
+          <label style={styles.label}>Organisation / Platform <span style={styles.req}>*</span></label>
+          <input name="organization" style={styles.input} placeholder="e.g. Google, NPTEL, Coursera"
+            value={form.organization} onChange={handleChange} />
+        </div>
+
+        <div style={styles.row}>
+          <div style={styles.field}>
+            <label style={styles.label}>Start Date <span style={styles.req}>*</span></label>
+            <input name="startDate" type="date" style={styles.input}
+              value={form.startDate} onChange={handleChange} />
+          </div>
+          <div style={styles.field}>
+            <label style={styles.label}>End Date</label>
+            <input name="endDate" type="date" style={styles.input}
+              value={form.endDate} onChange={handleChange} />
+          </div>
+        </div>
+
+        <div style={styles.field}>
+          <label style={styles.label}>Description</label>
+          <textarea name="description"
+            style={{ ...styles.input, height: 90, resize: 'vertical' }}
+            placeholder="Briefly describe what you did..."
+            value={form.description} onChange={handleChange} />
+        </div>
+
+        <div style={styles.field}>
+          <label style={styles.label}>Upload Certificate</label>
+          <input type="file" style={styles.fileInput} accept=".pdf,.jpg,.png"
+            onChange={(e) => setFile(e.target.files[0])} />
+          <p style={styles.fileHint}>PDF, JPG or PNG — max 2MB</p>
+        </div>
+
+        <div style={styles.divider} />
+
+        <div style={styles.btnRow}>
+          <button style={styles.cancelBtn} onClick={() => navigate('/activities')}>
+            Cancel
+          </button>
+          <button
+            style={{ ...styles.submitBtn, opacity: loading ? 0.7 : 1, cursor: loading ? 'not-allowed' : 'pointer' }}
+            onClick={handleSubmit}
+            disabled={loading}
+          >
+            {loading ? 'Submitting...' : 'Submit for Verification'}
+          </button>
+        </div>
+
       </div>
     </div>
   );
 }
 
 const styles = {
-  container: { padding: '30px', display: 'flex', justifyContent: 'center' },
-  card: { backgroundColor: 'white', borderRadius: '12px', padding: '35px', width: '650px', boxShadow: '0 2px 10px rgba(0,0,0,0.08)' },
-  title: { color: '#1a237e', marginBottom: '5px' },
-  subtitle: { color: '#888', fontSize: '13px', marginBottom: '25px' },
-  row: { display: 'flex', gap: '20px' },
-  inputGroup: { flex: 1, marginBottom: '18px' },
-  label: { display: 'block', marginBottom: '6px', fontWeight: '600', color: '#444', fontSize: '14px' },
-  input: { width: '100%', padding: '10px 14px', border: '1px solid #ddd', borderRadius: '8px', fontSize: '14px' },
-  btnRow: { display: 'flex', gap: '15px', justifyContent: 'flex-end', marginTop: '10px' },
-  cancelBtn: { padding: '10px 24px', border: '1px solid #ccc', borderRadius: '8px', backgroundColor: 'white', fontSize: '14px' },
-  submitBtn: { padding: '10px 24px', backgroundColor: '#1a237e', color: 'white', border: 'none', borderRadius: '8px', fontSize: '14px', fontWeight: '600' },
+  page: {
+    padding: '28px 24px',
+    display: 'flex',
+    justifyContent: 'center',
+    fontFamily: "'Segoe UI', sans-serif",
+  },
+  card: {
+    backgroundColor: '#fff',
+    borderRadius: 14,
+    padding: '32px 36px',
+    width: 640,
+    boxShadow: '0 1px 12px rgba(0,0,0,0.08)',
+  },
+  cardHeader: {
+    marginBottom: 20,
+  },
+  title: {
+    margin: 0,
+    marginBottom: 5,
+    fontSize: 20,
+    fontWeight: 700,
+    color: '#1a237e',
+  },
+  subtitle: {
+    margin: 0,
+    fontSize: 13,
+    color: '#aaa',
+  },
+  divider: {
+    height: 1,
+    backgroundColor: '#f0f0f0',
+    margin: '20px 0',
+  },
+  row: {
+    display: 'flex',
+    gap: 18,
+  },
+  field: {
+    flex: 1,
+    marginBottom: 18,
+  },
+  label: {
+    display: 'block',
+    marginBottom: 6,
+    fontWeight: 600,
+    color: '#444',
+    fontSize: 13,
+  },
+  req: {
+    color: '#e53935',
+    marginLeft: 2,
+  },
+  input: {
+    width: '100%',
+    padding: '10px 13px',
+    border: '1.5px solid #e0e0e0',
+    borderRadius: 8,
+    fontSize: 14,
+    outline: 'none',
+    backgroundColor: '#fafafa',
+    color: '#1a1a1a',
+    boxSizing: 'border-box',
+    fontFamily: "'Segoe UI', sans-serif",
+  },
+  fileInput: {
+    width: '100%',
+    padding: '9px 13px',
+    border: '1.5px dashed #d0d0d0',
+    borderRadius: 8,
+    fontSize: 13,
+    backgroundColor: '#fafafa',
+    boxSizing: 'border-box',
+    cursor: 'pointer',
+  },
+  fileHint: {
+    margin: '5px 0 0',
+    fontSize: 12,
+    color: '#bbb',
+  },
+  btnRow: {
+    display: 'flex',
+    gap: 12,
+    justifyContent: 'flex-end',
+  },
+  cancelBtn: {
+    padding: '10px 22px',
+    border: '1.5px solid #e0e0e0',
+    borderRadius: 8,
+    backgroundColor: '#fff',
+    fontSize: 14,
+    color: '#555',
+    cursor: 'pointer',
+    fontFamily: "'Segoe UI', sans-serif",
+  },
+  submitBtn: {
+    padding: '10px 24px',
+    backgroundColor: '#1a237e',
+    color: '#fff',
+    border: 'none',
+    borderRadius: 8,
+    fontSize: 14,
+    fontWeight: 600,
+    fontFamily: "'Segoe UI', sans-serif",
+    transition: 'opacity 0.15s',
+  },
 };
 
 export default AddAchievement;
