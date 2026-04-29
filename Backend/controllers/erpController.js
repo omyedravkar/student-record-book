@@ -52,7 +52,7 @@ const getErpData = async (req, res) => {
         if (!student) {
             return res.status(404).json({ 
                 success: false, 
-                message: 'Student ERP data nahi mila' 
+                message: 'Student ERP Data Not Found' 
             })
         }
         

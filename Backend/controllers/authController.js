@@ -4,7 +4,7 @@ const jwt = require('jsonwebtoken')
 // Login Auth controllers
 const login = async (req, res) => {
     try {
-        // Email se user dhundo
+        // Finding User from Email
         const user = await User.findOne({ email: req.body.email })
         if (!user) {
             return res.status(404).json({ success: false, message: 'User Not Found' })
@@ -15,7 +15,7 @@ const login = async (req, res) => {
             return res.status(401).json({ success: false, message: 'Wrong password' })
         }
 
-        // Token banao
+        // TOken
         const token = jwt.sign(
             { id: user._id, role: user.role },
             process.env.JWT_SECRET,
@@ -32,7 +32,7 @@ const login = async (req, res) => {
 // Register - New User
 const register = async (req, res) => {
     try {
-        // Check karo email already exist toh nahi karta
+        // Checking email already exist or not
         const existingUser = await User.findOne({ email: req.body.email })
         if (existingUser) {
             return res.status(400).json({ success: false, message: 'Email already registered ' })
