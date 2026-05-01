@@ -45,14 +45,15 @@ function EditActivity() {
     }
     setLoading(true);
     try {
-      await axios.put(`http://localhost:5000/api/student-record/edit/${id}`, {
-        type: form.type,
-        title: form.title,
-        organisation: form.organisation,
-        start_date: form.startDate,
-        end_date: form.endDate,
-        description: form.description,
-      });
+    await axios.put(`http://localhost:5000/api/student-record/edit/${id}`, {
+  type: form.type,
+  title: form.title,
+  organisation: form.organisation,
+  start_date: form.startDate,
+  end_date: form.endDate,
+  description: form.description,
+  status: 'PENDING',  // ← yeh line add karo
+});
       alert('Activity updated successfully!');
       navigate('/student');
     } catch (error) {
