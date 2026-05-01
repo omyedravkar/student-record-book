@@ -11,6 +11,9 @@ import ActivityList from "./pages/ActivityList.jsx";
 import Rankings from "./pages/Rankings.jsx";
 import RecruiterSearch from "./pages/RecruiterSearch";
 
+{/* added for the edit and delete [SOHAM]*/}
+import EditActivity from './pages/EditActivity';
+
 function ProtectedRoute({ element, allowedRole }) {
   const role = localStorage.getItem('role');
   const token = localStorage.getItem('token');
@@ -42,6 +45,10 @@ function Layout() {
           <Route path="/admin" element={<ProtectedRoute element={<AdminDashboard />} allowedRole="admin" />} />
           <Route path="/rankings" element={<ProtectedRoute element={<Rankings />} allowedRole={["admin", "placement"]} />} />
           <Route path="/recruiter" element={<RecruiterSearch />} />
+
+          {/* added for the edit and delete [SOHAM]*/}
+          <Route path="/edit-activity/:id" element={<EditActivity />} />
+
         </Routes>
       </div>
     </>

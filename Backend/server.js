@@ -3,13 +3,15 @@ const connectDB = require('./config/db');
 const cors = require('cors');
 require('dotenv').config();
 
+const { setServers } = require("node:dns/promises");
+setServers(["1.1.1.1", "8.8.8.8"]);
+
 const app = express();
 app.use(express.json());
 app.use(cors());
 const path = require('path');
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
-connectDB();
 
 const authRoutes = require('./routes/auth');
 const studentRecordRoutes = require('./routes/studentRecord');
@@ -37,6 +39,13 @@ app.post('/test/adduser', async (req, res) => {
 
 app.get('/', (req, res) => res.send('Backend is running'));
 
-app.listen(process.env.PORT, () => {
+
+connectDB()
+.then(()=>{
+  app.listen(process.env.PORT, () => {
   console.log(`Server running on port ${process.env.PORT}`);
 });
+})
+.catch((e)=>{
+  console.log("error: ",e)
+})

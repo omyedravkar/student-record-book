@@ -36,6 +36,16 @@ function StudentDashboard() {
     return { bg: '#fff8e1', color: '#f57f17' };
   };
 
+{/* added for the edit and delete [SOHAM]*/}
+  const handleDelete = async (id) => {
+  if (!window.confirm('Are you sure you want to delete this activity?')) return;
+  try {
+    await axios.delete(`http://localhost:5000/api/student-record/delete/${id}`);
+    fetchActivities(prn);
+  } catch (error) {
+    console.log('Error deleting:', error);
+  }
+};
   return (
     <div style={styles.page}>
 
@@ -84,6 +94,8 @@ function StudentDashboard() {
                 <th style={styles.th}>Title</th>
                 <th style={styles.th}>Organisation</th>
                 <th style={styles.th}>Status</th>
+               {/* added for the edit and delete [SOHAM]*/}
+                <th style={styles.th}>Actions</th>
               </tr>
             </thead>
             <tbody>
@@ -101,6 +113,27 @@ function StudentDashboard() {
                         {a.status}
                       </span>
                     </td>
+
+                 {/* added for the edit and delete [SOHAM]*/}
+                    {(a.status === 'PENDING' || a.status === 'REJECTED') &&  (
+  <td style={styles.td}>
+    <button
+      onClick={() => navigate(`/edit-activity/${a._id}`)}
+      style={{ marginRight: 8, padding: '4px 10px', 
+               backgroundColor: '#1a237e', color: '#fff', 
+               border: 'none', borderRadius: 6, cursor: 'pointer' }}>
+      Edit
+    </button>
+    <button
+      onClick={() => handleDelete(a._id)}
+      style={{ padding: '4px 10px', backgroundColor: '#c62828', 
+               color: '#fff', border: 'none', borderRadius: 6, 
+               cursor: 'pointer' }}>
+      Delete
+    </button>
+  </td>
+)}
+{a.status === 'VERIFIED' && <td style={styles.td}>-</td>}
                   </tr>
                 );
               })}

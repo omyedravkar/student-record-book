@@ -2,7 +2,7 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 
 const studentLinks = [
   { to: "/student", label: "Dashboard" },
-  { to: "/profile", label: "Profile" },
+  //{ to: "/profile", label: "Profile" },
   { to: "/add-achievement", label: "Add Activity" },
   { to: "/activities", label: "My Activities" },
 ];
@@ -58,7 +58,8 @@ export default function Navbar() {
 
       <div style={styles.right}>
         {name && (
-          <div style={styles.avatarWrap}>
+          //change for profile page
+          <div style={{...styles.avatarWrap, cursor: 'pointer'}} onClick={() => navigate('/profile')}>
             <div style={styles.avatar}>{initial}</div>
             <span style={styles.nameText}>{name}</span>
           </div>
