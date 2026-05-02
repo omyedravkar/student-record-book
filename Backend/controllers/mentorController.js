@@ -35,7 +35,7 @@ const rejectActivity = async (req, res) => {
     }
 }
 
-// Mentor ke liye — saari pending activities
+// for mentor all activities is pending 
 const getPendingActivities = async (req, res) => {
     try {
         const activities = await StudentRecord.find({ status: 'PENDING' })

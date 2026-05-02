@@ -1,4 +1,4 @@
-// Demo ERP Data — Real ERP integration ke liye placeholder
+// Demo ERP Data 
 const erpData = [
     {
         prn: "246100030",
@@ -44,7 +44,7 @@ const erpData = [
     }
 ]
 
-// PRN se student ka ERP data fetch karna 
+// fetching data from prn
 const getErpData = async (req, res) => {
     try {
         const student = erpData.find(s => s.prn === req.params.prn)
@@ -62,7 +62,7 @@ const getErpData = async (req, res) => {
     }
 }
 
-// Saare students ka ERP data (admin ke liye)
+// all students erp data (for admin)
 const getAllErpData = async (req, res) => {
     try {
         res.json({ success: true, data: erpData })
