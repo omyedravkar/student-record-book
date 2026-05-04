@@ -10,7 +10,7 @@ import Profile from "./pages/Profile.jsx";
 import ActivityList from "./pages/ActivityList.jsx";
 import Rankings from "./pages/Rankings.jsx";
 import RecruiterSearch from "./pages/RecruiterSearch";
-
+import ActivityDetail from './pages/ActivityDetail';
 {/* added for the edit and delete [SOHAM]*/}
 import EditActivity from './pages/EditActivity';
 
@@ -45,6 +45,7 @@ function Layout() {
           <Route path="/admin" element={<ProtectedRoute element={<AdminDashboard />} allowedRole="admin" />} />
           <Route path="/rankings" element={<ProtectedRoute element={<Rankings />} allowedRole={["admin", "placement"]} />} />
           <Route path="/recruiter" element={<RecruiterSearch />} />
+          <Route path="/activity/:id" element={<ActivityDetail />} />
 
           {/* added for the edit and delete [SOHAM]*/}
           <Route path="/edit-activity/:id" element={<EditActivity />} />

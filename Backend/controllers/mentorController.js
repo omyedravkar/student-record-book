@@ -10,6 +10,12 @@ const approveActivity = async (req, res) => {
         activity.status = 'VERIFIED'
         activity.verified_by = req.body.mentor_name
         activity.verified_at = new Date()
+        activity.history.push({         // ← history of the activity
+            action: 'Verified',
+            timestamp: new Date(),
+            note: `Approved by ${req.body.mentor_name}`
+        });
+        
         await activity.save()
         res.json({ success: true, message: 'Activity Verified Successfully !!', data: activity })
     } catch (error) {
@@ -28,6 +34,13 @@ const rejectActivity = async (req, res) => {
         activity.rejection_reason = req.body.reason
         activity.verified_by = req.body.mentor_name
         activity.verified_at = new Date()
+        
+        activity.history.push({         // ← history of the activity
+            action: 'Rejected',
+            timestamp: new Date(),
+            note: `Rejected by ${req.body.mentor_name} — ${req.body.reason}`
+        });
+        
         await activity.save()
         res.json({ success: true, message: 'Activity Rejected !!', data: activity })
     } catch (error) {

@@ -23,8 +23,14 @@ const studentRecordSchema = new mongoose.Schema({
   verified_by: { type: String },
   verified_at: { type: Date },
   rejection_reason: { type: String },
-  submitted_at: { type: Date, default: Date.now }
+  submitted_at: { type: Date, default: Date.now },
+  history: [{
+    action: { type: String },
+    timestamp: { type: Date, default: Date.now },
+    note: { type: String }
+  }],
 });
+
 
 studentRecordSchema.index({ 
   title: 'text', 

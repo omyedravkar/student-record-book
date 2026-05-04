@@ -25,6 +25,13 @@ function StudentDashboard() {
       console.log('Error fetching activities:', error);
     }
   };
+  const [search, setSearch] = useState('');
+
+  const filteredActivities = activities.filter(a =>
+  a.title.toLowerCase().includes(search.toLowerCase()) ||
+  a.type.toLowerCase().includes(search.toLowerCase()) ||
+  (a.organisation && a.organisation.toLowerCase().includes(search.toLowerCase()))
+  );
 
   const verified = activities.filter(a => a.status === 'VERIFIED').length;
   const pending = activities.filter(a => a.status === 'PENDING').length;
@@ -74,7 +81,24 @@ function StudentDashboard() {
           </div>
         ))}
       </div>
-
+<input
+  type="text"
+  placeholder="Search by title, type or organisation..."
+  value={search}
+  onChange={(e) => setSearch(e.target.value)}
+  style={{
+    width: '100%',
+    padding: '9px 14px',
+    border: '1.5px solid #e0e0e0',
+    borderRadius: 8,
+    fontSize: 14,
+    marginBottom: 14,
+    outline: 'none',
+    boxSizing: 'border-box',
+    fontFamily: "'Segoe UI', sans-serif",
+    backgroundColor: '#fafafa',
+  }}
+/>
       {/* Activities Table */}
       <div style={styles.card}>
         <div style={styles.sectionHeader}>
@@ -94,12 +118,13 @@ function StudentDashboard() {
                 <th style={styles.th}>Title</th>
                 <th style={styles.th}>Organisation</th>
                 <th style={styles.th}>Status</th>
+                <th style={styles.th}>Submitted</th>
                {/* added for the edit and delete [SOHAM]*/}
                 <th style={styles.th}>Actions</th>
               </tr>
             </thead>
             <tbody>
-              {activities.map((a, i) => {
+             {filteredActivities.map((a, i) => {
                 const s = statusStyle(a.status);
                 return (
                   <tr key={i} style={styles.tr}>
@@ -113,6 +138,14 @@ function StudentDashboard() {
                         {a.status}
                       </span>
                     </td>
+                    <td style={styles.td}>
+  {a.submitted_at 
+    ? new Date(a.submitted_at).toLocaleString('en-IN', {
+        day: '2-digit', month: 'short', year: 'numeric',
+        hour: '2-digit', minute: '2-digit'
+      })
+    : '-'}
+</td>
 
                  {/* added for the edit and delete [SOHAM]*/}
                     {(a.status === 'PENDING' || a.status === 'REJECTED') &&  (
@@ -132,6 +165,7 @@ function StudentDashboard() {
       Delete
     </button>
   </td>
+  
 )}
 {a.status === 'VERIFIED' && <td style={styles.td}>-</td>}
                   </tr>

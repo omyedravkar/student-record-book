@@ -1,3 +1,4 @@
+import { useNavigate } from 'react-router-dom';
 import { useState, useEffect } from "react";
 import axios from "axios";
 
@@ -9,6 +10,9 @@ const STATUS_COLORS = {
 
 export default function ActivityList() {
   const [activities, setActivities] = useState([]);
+  const [search, setSearch] = useState('');
+  const [typeFilter, setTypeFilter] = useState('all');
+  const navigate = useNavigate();
 
   useEffect(() => {
     const prn = localStorage.getItem('prn');
@@ -25,7 +29,14 @@ export default function ActivityList() {
       console.log('Error:', error);
     }
   };
-
+const filteredActivities = activities.filter(a => {
+ const matchSearch = 
+  a.title.toLowerCase().includes(search.toLowerCase()) ||
+  (a.organisation && a.organisation.toLowerCase().includes(search.toLowerCase())) ||
+  a.type.toLowerCase().includes(search.toLowerCase());
+  const matchType = typeFilter === 'all' || a.type === typeFilter;
+  return matchSearch && matchType;
+});
   return (
     <div style={styles.page}>
 
@@ -35,6 +46,44 @@ export default function ActivityList() {
       </div>
 
       <div style={styles.card}>
+<div style={{ display: 'flex', gap: 10, marginBottom: 16 }}>
+  <input
+    type="text"
+    placeholder="Search by title or organisation..."
+    value={search}
+    onChange={(e) => setSearch(e.target.value)}
+    style={{
+      flex: 1,
+      padding: '9px 14px',
+      border: '1.5px solid #e0e0e0',
+      borderRadius: 8,
+      fontSize: 14,
+      outline: 'none',
+      fontFamily: "'Segoe UI', sans-serif",
+      backgroundColor: '#fafafa',
+    }}
+  />
+  <select
+    value={typeFilter}
+    onChange={(e) => setTypeFilter(e.target.value)}
+    style={{
+      padding: '9px 14px',
+      border: '1.5px solid #e0e0e0',
+      borderRadius: 8,
+      fontSize: 14,
+      outline: 'none',
+      fontFamily: "'Segoe UI', sans-serif",
+      backgroundColor: '#fafafa',
+      cursor: 'pointer',
+    }}
+  >
+    <option value="all">All Types</option>
+    <option value="internship">Internship</option>
+    <option value="certificate">Certificate</option>
+    <option value="project">Project</option>
+    <option value="activity">Activity</option>
+  </select>
+</div>
         {activities.length === 0 ? (
           <p style={styles.empty}>No activities yet.</p>
         ) : (
@@ -48,8 +97,8 @@ export default function ActivityList() {
               </tr>
             </thead>
             <tbody>
-              {activities.map((a, i) => (
-                <tr key={i} style={styles.tr}>
+              {filteredActivities.map((a, i) => (
+                <tr key={i} style={{...styles.tr, cursor: 'pointer'}} onClick={() => navigate(`/activity/${a._id}`)}>
                   <td style={styles.td}>
                     <span style={styles.typeTag}>{a.type}</span>
                   </td>

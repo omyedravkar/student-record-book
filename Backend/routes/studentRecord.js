@@ -7,7 +7,8 @@ const {
     editActivity,
     deleteActivity,
     getVerifiedActivities,
-    searchStudents
+    searchStudents,
+    getActivityById
 } = require('../controllers/studentRecordController')
 
 router.get('/my', getMyActivities)
@@ -16,5 +17,6 @@ router.put('/edit/:id', editActivity)
 router.delete('/delete/:id', deleteActivity)
 router.get('/verified', getVerifiedActivities)
 router.get('/search', searchStudents)
+router.get('/detail/:id', getActivityById) // ← history of the activity
 
 module.exports = router

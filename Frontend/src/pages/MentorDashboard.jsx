@@ -1,8 +1,10 @@
+import { useNavigate } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 
 function MentorDashboard() {
   const [records, setRecords] = useState([]);
+  const navigate = useNavigate();
 
   useEffect(() => {
     fetchPending();
@@ -54,7 +56,8 @@ function MentorDashboard() {
         </div>
       ) : (
         records.map((r, i) => (
-          <div key={i} style={styles.card}>
+          <div key={i} style={{...styles.card, cursor: 'pointer'}} 
+          onClick={() => navigate(`/activity/${r._id}`)}>
 
             <div style={styles.cardTop}>
               <span style={styles.typeBadge}>{r.type}</span>
@@ -73,6 +76,14 @@ function MentorDashboard() {
                   {new Date(r.start_date).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' })}
                 </span>
               )}
+              {r.submitted_at && (
+                <span style={styles.metaItem}>
+                  Submitted: {new Date(r.submitted_at).toLocaleString('en-IN', {
+                  day: '2-digit', month: 'short', year: 'numeric',
+                  hour: '2-digit', minute: '2-digit'
+              })}
+                </span>
+)}
             </div>
 
             {r.description && (
@@ -95,17 +106,23 @@ function MentorDashboard() {
 
               <div style={styles.actions}>
                 <button
-                  style={styles.rejectBtn}
-                  onClick={() => handleAction(r._id, 'reject')}
-                >
-                  Reject
-                </button>
-                <button
-                  style={styles.approveBtn}
-                  onClick={() => handleAction(r._id, 'approve')}
-                >
-                  Approve
-                </button>
+  style={styles.rejectBtn}
+  onClick={(e) => {
+    e.stopPropagation();
+    handleAction(r._id, 'reject');
+  }}
+>
+  Reject
+</button>
+<button
+  style={styles.approveBtn}
+  onClick={(e) => {
+    e.stopPropagation();
+    handleAction(r._id, 'approve');
+  }}
+>
+  Approve
+</button>
               </div>
             </div>
 

@@ -33,6 +33,11 @@ const addActivity = async (req, res) => {
         recordData.tags = [...new Set([...autoTags, ...customTags])]
 
         const activity = new StudentRecord(recordData)
+        activity.history = [{           // ← history of the activity
+            action: 'Added',
+            timestamp: new Date(),
+            note: 'Activity submitted for verification'
+        }];
         await activity.save()
         res.json({ success: true, message: 'Activity added!', data: activity })
     } catch (error) {
@@ -47,6 +52,13 @@ const editActivity = async (req, res) => {
             return res.status(404).json({ success: false, message: 'Activity not found' })
         }
         Object.assign(activity, req.body)
+        activity.submitted_at = new Date()  // ← submitted timestamp
+        if (!activity.history) activity.history = [];
+        activity.history.push({            // ← history of the activity
+        action: 'Edited',
+        timestamp: new Date(),
+        note: 'Activity updated and resubmitted'
+        });
         await activity.save()
         res.json({ success: true, message: 'Activity updated!', data: activity })
     } catch (error) {
@@ -109,5 +121,15 @@ const searchStudents = async (req, res) => {
         res.status(500).json({ success: false, message: error.message })
     }
 }
-
-module.exports = { getMyActivities, addActivity, editActivity, deleteActivity, getVerifiedActivities, searchStudents }
+const getActivityById = async (req, res) => {
+    try {
+        const activity = await StudentRecord.findById(req.params.id)
+        if (!activity) {
+            return res.status(404).json({ success: false, message: 'Activity not found' })
+        }
+        res.json({ success: true, data: activity })
+    } catch (error) {
+        res.status(500).json({ success: false, message: error.message })
+    }
+}
+module.exports = { getMyActivities, addActivity, editActivity, deleteActivity, getVerifiedActivities, searchStudents, getActivityById }
