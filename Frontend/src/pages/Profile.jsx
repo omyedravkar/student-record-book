@@ -8,12 +8,16 @@ export default function Profile() {
     const prn = localStorage.getItem('prn');
     const token = localStorage.getItem('token');
 
-    axios.get(`http://localhost:5000/api/erp/student/${prn}`, {
-      headers: { Authorization: `Bearer ${token}` }
-    })
-    .then(res => {
-      if (res.data.success) setStudent(res.data.data);
-    })
+    // axios.get(`http://localhost:5000/api/erp/student/${prn}`, {
+    //   headers: { Authorization: `Bearer ${token}` }
+    // })
+    // .then(res => {
+    //   if (res.data.success) setStudent(res.data.data);
+    // })
+    axios.get(`http://localhost:5000/api/erp/student/${prn}`)
+.then(res => {
+    if (res.data.success) setStudent(res.data.data)
+})
     .catch(err => console.log(err));
   }, []);
 
@@ -62,7 +66,7 @@ export default function Profile() {
 
         {/* Academic */}
         <p style={styles.sectionLabel}>Academic Details</p>
-        <Field label="Roll Number" value={student.rollNo} />
+        <Field label="PRN Number" value={student.prn} />
         <Field label="CGPA" value={student.cgpa} />
         <Field label="Attendance" value={student.attendance ? `${student.attendance}%` : null} />
         <Field label="Mentor" value={student.mentor} />

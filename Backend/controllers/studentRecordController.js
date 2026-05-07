@@ -64,7 +64,7 @@ const lockDate = activity.created_at
 
 const now = new Date()
 const submittedAt = new Date(lockDate)
-const diffDays = (now - submittedAt) / (1000 * 60 * 60 * 24)  // minutes 
+const diffDays = (now - submittedAt) / (1000 * 60 * 60 * 24)  //minutes  
 
 if (diffDays > 7) {
     return res.status(403).json({ 

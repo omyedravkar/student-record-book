@@ -1,51 +1,51 @@
 const StudentRecord = require('../models/StudentRecord')
-
-// Demo ERP data (same as erpController)
-const erpData = [
-    { prn: "246100030", cgpa: 7.8 },
-    { prn: "246100014", cgpa: 9.1 },
-    { prn: "246100029", cgpa: 8.1 },
-]
+const ErpData = require('../models/ErpData')
 
 const searchStudents = async (req, res) => {
     try {
         const { type, minCgpa } = req.query
-        console.log("minCgpa:", minCgpa)
+
+        // Step 1 — Sirf VERIFIED activities lo
         let activities = await StudentRecord.find({ status: 'VERIFIED' })
 
-        // Step 1: type filter
+        // Step 2 — Type filter
         if (type) {
             activities = activities.filter(a => a.type === type)
         }
 
-        // Step 2: CGPA filter
+        // Step 3 — CGPA filter — ab database se
         if (minCgpa !== undefined) {
-        const cgpaValue = Number(minCgpa)
+            const cgpaValue = Number(minCgpa)
+            const filtered = []
+            for (const a of activities) {
+                const student = await ErpData.findOne({ prn: a.prn })
+                if (!student) continue
+                if (student.cgpa >= cgpaValue) {
+                    filtered.push(a)
+                }
+            }
+            activities = filtered
+        }
 
-        activities = activities.filter(a => {
-        const student = erpData.find(s => s.prn === a.prn)
-        if (!student) return false
+        // Step 4 — CGPA se sort karo highest first
+        const erpAll = await ErpData.find({})
+        activities.sort((a, b) => {
+            const studentA = erpAll.find(s => s.prn === a.prn)
+            const studentB = erpAll.find(s => s.prn === b.prn)
+            return (studentB?.cgpa || 0) - (studentA?.cgpa || 0)
+        })
 
-        return student.cgpa >= cgpaValue
-    })
-}
+        // Step 5 — CGPA aur name bhi add karo result mein
+        const result = activities.map(a => {
+            const student = erpAll.find(s => s.prn === a.prn)
+            return {
+                ...a._doc,
+                cgpa: student ? student.cgpa : 'N/A',
+                studentName: student ? student.name : 'N/A'
+            }
+        })
 
-//gives highest cgpa student on top
-activities.sort((a, b) => {
-    const studentA = erpData.find(s => s.prn === a.prn)
-    const studentB = erpData.find(s => s.prn === b.prn)
-
-    return (studentB?.cgpa || 0) - (studentA?.cgpa || 0)
-})
-
-    const result = activities.map(a => {
-    const student = erpData.find(s => s.prn === a.prn)
-    return {
-        ...a._doc,
-        cgpa: student ? student.cgpa : 'N/A'
-    }
-})
-res.json({ success: true, data: result })
+        res.json({ success: true, data: result })
 
     } catch (error) {
         res.status(500).json({ success: false, message: error.message })
