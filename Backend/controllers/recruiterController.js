@@ -5,7 +5,7 @@ const searchStudents = async (req, res) => {
     try {
         const { type, minCgpa } = req.query
 
-        // Step 1 — Sirf VERIFIED activities lo
+        // Step 1 —  VERIFIED activities 
         let activities = await StudentRecord.find({ status: 'VERIFIED' })
 
         // Step 2 — Type filter
@@ -13,7 +13,7 @@ const searchStudents = async (req, res) => {
             activities = activities.filter(a => a.type === type)
         }
 
-        // Step 3 — CGPA filter — ab database se
+        // Step 3 — CGPA filter — from database 
         if (minCgpa !== undefined) {
             const cgpaValue = Number(minCgpa)
             const filtered = []
@@ -27,7 +27,7 @@ const searchStudents = async (req, res) => {
             activities = filtered
         }
 
-        // Step 4 — CGPA se sort karo highest first
+        // Step 4 — CGPA through sort highest first
         const erpAll = await ErpData.find({})
         activities.sort((a, b) => {
             const studentA = erpAll.find(s => s.prn === a.prn)
@@ -35,7 +35,7 @@ const searchStudents = async (req, res) => {
             return (studentB?.cgpa || 0) - (studentA?.cgpa || 0)
         })
 
-        // Step 5 — CGPA aur name bhi add karo result mein
+        // Step 5 — CGPA, name add in result 
         const result = activities.map(a => {
             const student = erpAll.find(s => s.prn === a.prn)
             return {

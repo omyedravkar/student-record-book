@@ -94,16 +94,16 @@ const seedDatabase = async () => {
         await mongoose.connect(process.env.MONGO_URI)
         console.log('MongoDB connected')
 
-        // Pehle clear karo
+        // clearing old data
         await ErpData.deleteMany({})
         await User.deleteMany({})
         console.log('Old data cleared')
 
-        // ERP data insert karo
+        // inseting ERP data 
         await ErpData.insertMany(erpRecords)
         console.log('ERP data inserted')
 
-        // Users banao same data se
+        // creating user with same data
         for (const record of erpRecords) {
             const user = new User({
                 prn: record.prn,
