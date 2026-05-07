@@ -38,6 +38,7 @@ const addActivity = async (req, res) => {
             timestamp: new Date(),
             note: 'Activity submitted for verification'
         }];
+        activity.created_at = new Date()  // Original add date save 
         await activity.save()
         res.json({ success: true, message: 'Activity added!', data: activity })
     } catch (error) {
@@ -47,11 +48,34 @@ const addActivity = async (req, res) => {
 
 const editActivity = async (req, res) => {
     try {
-        const activity = await StudentRecord.findById(req.params.id)
-        if (!activity) {
-            return res.status(404).json({ success: false, message: 'Activity not found' })
-        }
-        Object.assign(activity, req.body)
+       const activity = await StudentRecord.findById(req.params.id)
+
+if (!activity) {
+    return res.status(404).json({ 
+        success: false, 
+        message: 'Activity not found' 
+    })
+}
+
+// Time lock check
+const lockDate = activity.created_at
+
+
+
+const now = new Date()
+const submittedAt = new Date(lockDate)
+const diffDays = (now - submittedAt) / (1000 * 60 * 60 * 24)  // minutes 
+
+if (diffDays > 7) {
+    return res.status(403).json({ 
+        success: false, 
+        message: 'Edit window closed.' 
+    })
+}     Object.assign(activity, req.body)
+
+activity.created_at = activity.created_at 
+
+
         activity.submitted_at = new Date()  // ← submitted timestamp
         if (!activity.history) activity.history = [];
         activity.history.push({            // ← history of the activity

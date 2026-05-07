@@ -53,6 +53,28 @@ function ActivityDetail() {
         <div style={styles.divider} />
 
         <div style={styles.infoGrid}>
+         
+          {(() => {
+    const originalDate = activity.created_at || activity.submitted_at
+    const diff = (new Date() - new Date(originalDate)) / (1000 * 60 * 60 * 24)
+    const daysLeft = Math.max(0, 7 - Math.floor(diff))
+    return (
+        <div style={{
+            backgroundColor: daysLeft === 0 ? '#ffebee' : '#e8f5e9',
+            borderRadius: 8,
+            padding: '10px 14px',
+            marginBottom: 14,
+            fontSize: 13,
+            color: daysLeft === 0 ? '#c62828' : '#2e7d32',
+            fontWeight: 600
+        }}>
+            {daysLeft === 0 
+                ? ' Edit window closed — 7 days have passed'
+                : ` Edit window open — ${daysLeft} day(s) remaining`
+            }
+        </div>
+    )
+})()}
           {activity.start_date && (
             <div style={styles.infoItem}>
               <span style={styles.infoLabel}>Start Date</span>

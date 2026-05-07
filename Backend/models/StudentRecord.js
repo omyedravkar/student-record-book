@@ -24,6 +24,7 @@ const studentRecordSchema = new mongoose.Schema({
   verified_at: { type: Date },
   rejection_reason: { type: String },
   submitted_at: { type: Date, default: Date.now },
+  created_at: { type: Date, default: Date.now },
   history: [{
     action: { type: String },
     timestamp: { type: Date, default: Date.now },

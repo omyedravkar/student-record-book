@@ -53,6 +53,11 @@ function StudentDashboard() {
     console.log('Error deleting:', error);
   }
 };
+const isEditable = (activity) => {
+  const originalDate = activity.created_at || activity.submitted_at
+  const diff = (new Date() - new Date(originalDate)) / (1000 * 60 * 60 * 24)
+  return diff <= 7 
+}
   return (
     <div style={styles.page}>
 
@@ -150,15 +155,22 @@ function StudentDashboard() {
                  {/* added for the edit and delete [SOHAM]*/}
                     {(a.status === 'PENDING' || a.status === 'REJECTED') &&  (
   <td style={styles.td}>
+  {isEditable(a) ? (
     <button
-      onClick={() => navigate(`/edit-activity/${a._id}`)}
-      style={{ marginRight: 8, padding: '4px 10px', 
-               backgroundColor: '#1a237e', color: '#fff', 
-               border: 'none', borderRadius: 6, cursor: 'pointer' }}>
-      Edit
+        onClick={() => navigate(`/edit-activity/${a._id}`)}
+        style={{ marginRight: 8, padding: '4px 10px',
+                 backgroundColor: '#1a237e', color: '#fff',
+                 border: 'none', borderRadius: 6, cursor: 'pointer' }}>
+        Edit
     </button>
+) : (
+    <span style={{ fontSize: 12, color: '#aaa', marginRight: 8 }}>
+        Locked
+    </span>
+)}
     <button
       onClick={() => handleDelete(a._id)}
+      
       style={{ padding: '4px 10px', backgroundColor: '#c62828', 
                color: '#fff', border: 'none', borderRadius: 6, 
                cursor: 'pointer' }}>
