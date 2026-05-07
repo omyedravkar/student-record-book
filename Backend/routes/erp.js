@@ -1,11 +1,24 @@
-const express = require('express')
-const router = express.Router()
-const { getErpData, getAllErpData } = require('../controllers/erpController')
+const express = require('express');
+const router = express.Router();
+const ErpData = require('../models/ErpData');
 
-// specific student data from erp
-router.get('/student/:prn', getErpData)
+router.get('/student/:prn', async (req, res) => {
+  try {
+    const data = await ErpData.findOne({ prn: req.params.prn });
+    if (!data) return res.status(404).json({ success: false, message: 'Student not found' });
+    res.json({ success: true, data });
+  } catch (e) {
+    res.status(500).json({ success: false, message: e.message });
+  }
+});
 
-// all students data
-router.get('/all', getAllErpData)
+router.get('/all', async (req, res) => {
+  try {
+    const data = await ErpData.find({});
+    res.json({ success: true, data });
+  } catch (e) {
+    res.status(500).json({ success: false, message: e.message });
+  }
+});
 
-module.exports = router
+module.exports = router;

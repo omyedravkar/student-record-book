@@ -57,5 +57,16 @@ const getPendingActivities = async (req, res) => {
         res.status(500).json({ success: false, message: error.message })
     }
 }
+const getMentorHistory = async (req, res) => {
+    try {
+        const activities = await StudentRecord.find({
+            status: { $in: ['VERIFIED', 'REJECTED'] },
+            verified_by: req.query.mentor_name
+        }).sort({ verified_at: -1 });
+        res.json({ success: true, data: activities });
+    } catch (error) {
+        res.status(500).json({ success: false, message: error.message });
+    }
+}
 
-module.exports = { approveActivity, rejectActivity, getPendingActivities }
+module.exports = { approveActivity, rejectActivity, getPendingActivities, getMentorHistory }
