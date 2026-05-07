@@ -7,6 +7,12 @@ const studentRecordSchema = new mongoose.Schema({
     enum: ['internship', 'certificate', 'project', 'activity'],
     required: true 
   },
+  subcategory: { type: String },
+  level: { 
+    type: String, 
+    enum: ['International', 'National', 'State', 'District', 'College', 'Other', ''],
+    default: ''
+  },
   title: { type: String, required: true },
   organisation: { type: String },
   duration_weeks: { type: Number },
@@ -31,7 +37,6 @@ const studentRecordSchema = new mongoose.Schema({
     note: { type: String }
   }],
 });
-
 
 studentRecordSchema.index({ 
   title: 'text', 

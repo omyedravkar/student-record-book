@@ -12,6 +12,28 @@ const SUBCATEGORIES = {
 const SPORT_TYPES = ['Cricket', 'Football', 'Basketball', 'Volleyball', 'Athletics', 'Swimming', 'Badminton', 'Chess', 'Other'];
 const CULTURAL_TYPES = ['Dance', 'Music', 'Drama', 'Fine Arts', 'Literary', 'Photography', 'Other'];
 
+// Which types/subcategories need a level
+const NEEDS_LEVEL = {
+  activity: true,
+  internship: false,
+  certificate: false,
+  project: true,
+};
+
+const LEVELS = ['International', 'National', 'State', 'District', 'College', 'Other'];
+
+const levelColor = (level) => {
+  const map = {
+    International: { bg: '#e8f5e9', color: '#2e7d32' },
+    National: { bg: '#e3f2fd', color: '#1565c0' },
+    State: { bg: '#f3e5f5', color: '#6a1b9a' },
+    District: { bg: '#fff3e0', color: '#e65100' },
+    College: { bg: '#fce4ec', color: '#c62828' },
+    Other: { bg: '#f5f5f5', color: '#666' },
+  };
+  return map[level] || { bg: '#f5f5f5', color: '#666' };
+};
+
 function AddAchievement() {
   const navigate = useNavigate();
   const [form, setForm] = useState({
@@ -19,6 +41,7 @@ function AddAchievement() {
     subcategory: '',
     sportType: '',
     culturalType: '',
+    level: '',
     title: '',
     organization: '',
     startDate: '',
@@ -31,7 +54,7 @@ function AddAchievement() {
   const handleChange = (e) => {
     const { name, value } = e.target;
     if (name === 'type') {
-      setForm({ ...form, type: value, subcategory: '', sportType: '', culturalType: '' });
+      setForm({ ...form, type: value, subcategory: '', sportType: '', culturalType: '', level: '' });
     } else {
       setForm({ ...form, [name]: value });
     }
@@ -51,21 +74,24 @@ function AddAchievement() {
       const end = form.endDate ? new Date(form.endDate) : new Date();
       const duration_weeks = Math.round((end - start) / (1000 * 60 * 60 * 24 * 7));
 
-      // Build descriptive tags from subcategory
       const extraTag = form.subcategory === 'Sports' ? form.sportType
         : form.subcategory === 'Cultural' ? form.culturalType
         : form.subcategory;
 
+      const customTagsList = [form.subcategory, extraTag, form.level].filter(Boolean);
+
       const formData = new FormData();
       formData.append('prn', prn);
       formData.append('type', form.type);
+      formData.append('subcategory', form.subcategory || '');
+      formData.append('level', form.level || '');
       formData.append('title', form.title);
       formData.append('organisation', form.organization);
       formData.append('duration_weeks', duration_weeks);
       formData.append('start_date', form.startDate);
       formData.append('end_date', form.endDate);
       formData.append('description', form.description);
-      if (form.subcategory) formData.append('customTags', [form.subcategory, extraTag].filter(Boolean).join(','));
+      if (customTagsList.length > 0) formData.append('customTags', customTagsList.join(','));
       if (file) formData.append('document', file);
 
       const response = await axios.post('http://localhost:5000/api/student-record/add', formData, {
@@ -84,6 +110,7 @@ function AddAchievement() {
   };
 
   const subcats = SUBCATEGORIES[form.type] || [];
+  const showLevel = NEEDS_LEVEL[form.type];
 
   return (
     <div style={styles.page}>
@@ -95,7 +122,6 @@ function AddAchievement() {
         <div style={styles.divider} />
 
         <div style={styles.row}>
-          {/* Type */}
           <div style={styles.field}>
             <label style={styles.label}>Type <span style={styles.req}>*</span></label>
             <select name="type" style={styles.input} value={form.type} onChange={handleChange}>
@@ -106,7 +132,6 @@ function AddAchievement() {
             </select>
           </div>
 
-          {/* Subcategory */}
           <div style={styles.field}>
             <label style={styles.label}>Category</label>
             <select name="subcategory" style={styles.input} value={form.subcategory} onChange={handleChange}>
@@ -116,7 +141,7 @@ function AddAchievement() {
           </div>
         </div>
 
-        {/* Sport type drill-down */}
+        {/* Sport drill-down */}
         {form.subcategory === 'Sports' && (
           <div style={styles.field}>
             <label style={styles.label}>Sport Type</label>
@@ -127,7 +152,7 @@ function AddAchievement() {
           </div>
         )}
 
-        {/* Cultural type drill-down */}
+        {/* Cultural drill-down */}
         {form.subcategory === 'Cultural' && (
           <div style={styles.field}>
             <label style={styles.label}>Cultural Type</label>
@@ -135,6 +160,38 @@ function AddAchievement() {
               <option value="">Select type...</option>
               {CULTURAL_TYPES.map(s => <option key={s} value={s}>{s}</option>)}
             </select>
+          </div>
+        )}
+
+        {/* Level — shown for activity and project */}
+        {showLevel && (
+          <div style={styles.field}>
+            <label style={styles.label}>Achievement Level</label>
+            <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+              {LEVELS.map(l => {
+                const c = levelColor(l);
+                const selected = form.level === l;
+                return (
+                  <button key={l} type="button"
+                    onClick={() => setForm({ ...form, level: selected ? '' : l })}
+                    style={{
+                      padding: '6px 14px', borderRadius: 20, fontSize: 13, fontWeight: 600,
+                      cursor: 'pointer', fontFamily: "'Segoe UI', sans-serif",
+                      border: selected ? `2px solid ${c.color}` : '2px solid #e0e0e0',
+                      background: selected ? c.bg : '#fafafa',
+                      color: selected ? c.color : '#aaa',
+                      transition: 'all 0.15s',
+                    }}>
+                    {l}
+                  </button>
+                );
+              })}
+            </div>
+            {form.level && (
+              <p style={{ margin: '6px 0 0', fontSize: 12, color: '#aaa' }}>
+                Selected: <strong style={{ color: levelColor(form.level).color }}>{form.level}</strong>
+              </p>
+            )}
           </div>
         )}
 
@@ -168,7 +225,7 @@ function AddAchievement() {
         </div>
 
         <div style={styles.field}>
-          <label style={styles.label}>Upload Certificate</label>
+          <label style={styles.label}>Upload Certificate / Proof</label>
           <input type="file" style={styles.fileInput} accept=".pdf,.jpg,.png"
             onChange={(e) => setFile(e.target.files[0])} />
           <p style={styles.fileHint}>PDF, JPG or PNG — max 2MB</p>
@@ -189,7 +246,7 @@ function AddAchievement() {
 
 const styles = {
   page: { padding: '28px 24px', display: 'flex', justifyContent: 'center', fontFamily: "'Segoe UI', sans-serif" },
-  card: { backgroundColor: '#fff', borderRadius: 14, padding: '32px 36px', width: 660, boxShadow: '0 1px 12px rgba(0,0,0,0.08)' },
+  card: { backgroundColor: '#fff', borderRadius: 14, padding: '32px 36px', width: 680, boxShadow: '0 1px 12px rgba(0,0,0,0.08)' },
   cardHeader: { marginBottom: 20 },
   title: { margin: 0, marginBottom: 5, fontSize: 20, fontWeight: 700, color: '#1a237e' },
   subtitle: { margin: 0, fontSize: 13, color: '#aaa' },

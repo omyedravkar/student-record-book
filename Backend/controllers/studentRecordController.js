@@ -15,6 +15,8 @@ const addActivity = async (req, res) => {
         const recordData = {
             prn: req.body.prn,
             type: req.body.type,
+            subcategory: req.body.subcategory || '',
+            level: req.body.level || '',
             title: req.body.title,
             organisation: req.body.organisation,
             duration_weeks: req.body.duration_weeks,
@@ -24,21 +26,11 @@ const addActivity = async (req, res) => {
             document_url: req.file ? `/uploads/${req.file.filename}` : req.body.document_url,
         }
 
-        // Auto generate tags from the record data
         const autoTags = generateTags(recordData)
-
-        // If student sent custom tags merge them
         const customTags = req.body.customTags ? req.body.customTags.split(',').map(t => t.trim().toLowerCase()) : []
-
         recordData.tags = [...new Set([...autoTags, ...customTags])]
 
         const activity = new StudentRecord(recordData)
-        activity.history = [{           // ← history of the activity
-            action: 'Added',
-            timestamp: new Date(),
-            note: 'Activity submitted for verification'
-        }];
-        activity.created_at = new Date()  // Original add date save 
         await activity.save()
         res.json({ success: true, message: 'Activity added!', data: activity })
     } catch (error) {

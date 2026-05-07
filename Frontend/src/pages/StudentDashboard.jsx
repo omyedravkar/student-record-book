@@ -28,9 +28,9 @@ function StudentDashboard() {
   const [search, setSearch] = useState('');
 
   const filteredActivities = activities.filter(a =>
-  a.title.toLowerCase().includes(search.toLowerCase()) ||
-  a.type.toLowerCase().includes(search.toLowerCase()) ||
-  (a.organisation && a.organisation.toLowerCase().includes(search.toLowerCase()))
+    a.title.toLowerCase().includes(search.toLowerCase()) ||
+    a.type.toLowerCase().includes(search.toLowerCase()) ||
+    (a.organisation && a.organisation.toLowerCase().includes(search.toLowerCase()))
   );
 
   const verified = activities.filter(a => a.status === 'VERIFIED').length;
@@ -43,21 +43,32 @@ function StudentDashboard() {
     return { bg: '#fff8e1', color: '#f57f17' };
   };
 
-{/* added for the edit and delete [SOHAM]*/}
+  {/* added for the edit and delete [SOHAM]*/ }
   const handleDelete = async (id) => {
-  if (!window.confirm('Are you sure you want to delete this activity?')) return;
-  try {
-    await axios.delete(`http://localhost:5000/api/student-record/delete/${id}`);
-    fetchActivities(prn);
-  } catch (error) {
-    console.log('Error deleting:', error);
-  }
+    if (!window.confirm('Are you sure you want to delete this activity?')) return;
+    try {
+      await axios.delete(`http://localhost:5000/api/student-record/delete/${id}`);
+      fetchActivities(prn);
+    } catch (error) {
+      console.log('Error deleting:', error);
+    }
+  };
+  const levelColor = (level) => {
+  const map = {
+    International: { bg: '#e8f5e9', color: '#2e7d32' },
+    National: { bg: '#e3f2fd', color: '#1565c0' },
+    State: { bg: '#f3e5f5', color: '#6a1b9a' },
+    District: { bg: '#fff3e0', color: '#e65100' },
+    College: { bg: '#fce4ec', color: '#c62828' },
+    Other: { bg: '#f5f5f5', color: '#666' },
+  };
+  return map[level] || null;
 };
-const isEditable = (activity) => {
-  const originalDate = activity.created_at || activity.submitted_at
-  const diff = (new Date() - new Date(originalDate)) / (1000 * 60 * 60 * 24)
-  return diff <= 7 
-}
+  const isEditable = (activity) => {
+    const originalDate = activity.created_at || activity.submitted_at
+    const diff = (new Date() - new Date(originalDate)) / (1000 * 60 * 60 * 24)
+    return diff <= 7
+  }
   return (
     <div style={styles.page}>
 
@@ -86,24 +97,24 @@ const isEditable = (activity) => {
           </div>
         ))}
       </div>
-<input
-  type="text"
-  placeholder="Search by title, type or organisation..."
-  value={search}
-  onChange={(e) => setSearch(e.target.value)}
-  style={{
-    width: '100%',
-    padding: '9px 14px',
-    border: '1.5px solid #e0e0e0',
-    borderRadius: 8,
-    fontSize: 14,
-    marginBottom: 14,
-    outline: 'none',
-    boxSizing: 'border-box',
-    fontFamily: "'Segoe UI', sans-serif",
-    backgroundColor: '#fafafa',
-  }}
-/>
+      <input
+        type="text"
+        placeholder="Search by title, type or organisation..."
+        value={search}
+        onChange={(e) => setSearch(e.target.value)}
+        style={{
+          width: '100%',
+          padding: '9px 14px',
+          border: '1.5px solid #e0e0e0',
+          borderRadius: 8,
+          fontSize: 14,
+          marginBottom: 14,
+          outline: 'none',
+          boxSizing: 'border-box',
+          fontFamily: "'Segoe UI', sans-serif",
+          backgroundColor: '#fafafa',
+        }}
+      />
       {/* Activities Table */}
       <div style={styles.card}>
         <div style={styles.sectionHeader}>
@@ -124,62 +135,52 @@ const isEditable = (activity) => {
                 <th style={styles.th}>Organisation</th>
                 <th style={styles.th}>Status</th>
                 <th style={styles.th}>Submitted</th>
-               {/* added for the edit and delete [SOHAM]*/}
+                {/* added for the edit and delete [SOHAM]*/}
                 <th style={styles.th}>Actions</th>
               </tr>
             </thead>
             <tbody>
-             {filteredActivities.map((a, i) => {
+              {filteredActivities.map((a, i) => {
                 const s = statusStyle(a.status);
+                const lc = a.level ? levelColor(a.level) : null;
                 return (
                   <tr key={i} style={styles.tr}>
                     <td style={styles.td}>
                       <span style={styles.typeTag}>{a.type}</span>
+                      {a.subcategory && <span style={{ ...styles.typeTag, background: '#f5f5f5', color: '#666', marginLeft: 4 }}>{a.subcategory}</span>}
                     </td>
-                    <td style={styles.td}>{a.title}</td>
+                    <td style={styles.td}>
+                      {a.title}
+                      {lc && (
+                        <span style={{ marginLeft: 6, padding: '2px 8px', borderRadius: 20, fontSize: 11, fontWeight: 700, background: lc.bg, color: lc.color }}>
+                          {a.level}
+                        </span>
+                      )}
+                    </td>
                     <td style={{ ...styles.td, color: '#888' }}>{a.organisation}</td>
                     <td style={styles.td}>
-                      <span style={{ ...styles.badge, backgroundColor: s.bg, color: s.color }}>
-                        {a.status}
-                      </span>
+                      <span style={{ ...styles.badge, backgroundColor: s.bg, color: s.color }}>{a.status}</span>
                     </td>
                     <td style={styles.td}>
-  {a.submitted_at 
-    ? new Date(a.submitted_at).toLocaleString('en-IN', {
-        day: '2-digit', month: 'short', year: 'numeric',
-        hour: '2-digit', minute: '2-digit'
-      })
-    : '-'}
-</td>
-
-                 {/* added for the edit and delete [SOHAM]*/}
-                    {(a.status === 'PENDING' || a.status === 'REJECTED') &&  (
-  <td style={styles.td}>
-  {isEditable(a) ? (
-    <button
-        onClick={() => navigate(`/edit-activity/${a._id}`)}
-        style={{ marginRight: 8, padding: '4px 10px',
-                 backgroundColor: '#1a237e', color: '#fff',
-                 border: 'none', borderRadius: 6, cursor: 'pointer' }}>
-        Edit
-    </button>
-) : (
-    <span style={{ fontSize: 12, color: '#aaa', marginRight: 8 }}>
-        Locked
-    </span>
-)}
-    <button
-      onClick={() => handleDelete(a._id)}
-      
-      style={{ padding: '4px 10px', backgroundColor: '#c62828', 
-               color: '#fff', border: 'none', borderRadius: 6, 
-               cursor: 'pointer' }}>
-      Delete
-    </button>
-  </td>
-  
-)}
-{a.status === 'VERIFIED' && <td style={styles.td}>-</td>}
+                      {a.submitted_at ? new Date(a.submitted_at).toLocaleString('en-IN', {
+                        day: '2-digit', month: 'short', year: 'numeric',
+                        hour: '2-digit', minute: '2-digit'
+                      }) : '-'}
+                    </td>
+                    <td style={styles.td}>
+                      {(a.status === 'PENDING' || a.status === 'REJECTED') ? (
+                        <div style={{ display: 'flex', gap: 6 }}>
+                          {isEditable(a) ? (
+                            <button onClick={() => navigate(`/edit-activity/${a._id}`)} style={styles.editBtn}>Edit</button>
+                          ) : (
+                            <span style={{ fontSize: 12, color: '#aaa' }}>Locked</span>
+                          )}
+                          <button onClick={() => handleDelete(a._id)} style={styles.deleteBtn}>Delete</button>
+                        </div>
+                      ) : (
+                        <span style={{ fontSize: 12, color: '#ccc' }}>—</span>
+                      )}
+                    </td>
                   </tr>
                 );
               })}
