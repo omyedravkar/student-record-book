@@ -120,6 +120,26 @@ function ActivityDetail() {
             <p style={styles.rejectText}>{activity.rejection_reason}</p>
           </div>
         )}
+        {/* Uploaded files */}
+{activity.document_urls && activity.document_urls.length > 0 && (
+    <div style={styles.descBox}>
+        <span style={styles.infoLabel}>Uploaded Documents</span>
+        <div style={{ marginTop: 8, display: 'flex', flexDirection: 'column', gap: 6 }}>
+            {activity.document_urls.map((url, i) => (
+                <a
+                    key={i}
+                    href={`http://localhost:5000/${url}`}
+                    target="_blank"
+                    rel="noreferrer"
+                    style={{ color: '#1a237e', fontSize: 13 }}
+                >
+                    📎 Document {i + 1}
+                </a>
+            ))}
+        </div>
+    </div>
+)}
+
 
         <div style={styles.divider} />
 

@@ -310,16 +310,33 @@ export default function MentorDashboard() {
                             <p style={{ margin: 0, fontSize: 13, color: '#555', lineHeight: 1.7 }}>{r.description}</p>
                           </div>
                         )}
+    </div>
 
-                        {r.document_url ? (
-                          <a href={`http://localhost:5000${r.document_url}`} target="_blank" rel="noreferrer"
-                            style={S.docBtn}>
-                            📄 View Uploaded Document
-                          </a>
-                        ) : (
-                          <div style={S.noDoc}>📎 No document uploaded</div>
-                        )}
-                      </div>
+    {r.document_urls && r.document_urls.length > 0 ? (
+    <div style={{ marginTop: 8 }}>
+        <span style={{ fontSize: 12, color: '#aaa', fontWeight: 600 }}>
+            DOCUMENTS
+        </span>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 4, marginTop: 4 }}>
+            {r.document_urls.map((url, i) => (
+                <a
+                    key={i}
+                    href={`http://localhost:5000/${url}`}
+                    target="_blank"
+                    rel="noreferrer"
+                    onClick={(e) => e.stopPropagation()}
+                    style={{ color: '#1a237e', fontSize: 13, textDecoration: 'none' }}
+                >
+                    📎 Document {i + 1}
+                </a>
+            ))}
+        </div>
+    </div>
+) : (
+    <span style={{ fontSize: 12, color: '#bbb' }}>
+        📎 No document uploaded
+    </span>
+)}
 
                       {/* ── REJECTION INLINE UI ── */}
                       {isRejecting ? (

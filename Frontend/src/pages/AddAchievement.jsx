@@ -47,8 +47,10 @@ function AddAchievement() {
     startDate: '',
     endDate: '',
     description: '',
+    extraTag: '',
   });
-  const [file, setFile] = useState(null);
+  const [file, setFile] = useState([])
+
   const [loading, setLoading] = useState(false);
 
   const handleChange = (e) => {
@@ -92,7 +94,11 @@ function AddAchievement() {
       formData.append('end_date', form.endDate);
       formData.append('description', form.description);
       if (customTagsList.length > 0) formData.append('customTags', customTagsList.join(','));
-      if (file) formData.append('document', file);
+     if (file && file.length > 0) {
+    file.forEach((f) => {
+        formData.append('documents', f)
+    })
+}
 
       const response = await axios.post('http://localhost:5000/api/student-record/add', formData, {
         headers: { 'Content-Type': 'multipart/form-data' }
@@ -140,6 +146,20 @@ function AddAchievement() {
             </select>
           </div>
         </div>
+
+{/* Other category text input */}
+{form.subcategory === 'Other' && (
+    <div style={styles.field}>
+        <label style={styles.label}>Specify Category</label>
+        <input
+            name="extraTag"
+            style={styles.input}
+            placeholder="e.g. Robotics, Open Source..."
+            value={form.extraTag || ''}
+            onChange={handleChange}
+        />
+    </div>
+)}
 
         {/* Sport drill-down */}
         {form.subcategory === 'Sports' && (
@@ -226,9 +246,22 @@ function AddAchievement() {
 
         <div style={styles.field}>
           <label style={styles.label}>Upload Certificate / Proof</label>
-          <input type="file" style={styles.fileInput} accept=".pdf,.jpg,.png"
-            onChange={(e) => setFile(e.target.files[0])} />
-          <p style={styles.fileHint}>PDF, JPG or PNG — max 2MB</p>
+          <input
+    type="file"
+    style={styles.fileInput}
+    accept=".pdf,.jpg,.png"
+    multiple
+    onChange={(e) => {
+        const selected = Array.from(e.target.files)
+        if (selected.length > 5) {
+            alert('Maximum 5 files allowed!')
+            e.target.value = ''
+            return
+        }
+        setFile(selected)
+    }}
+/>
+<p style={styles.fileHint}>PDF, JPG or PNG — max 5 files</p>
         </div>
 
         <div style={styles.divider} />

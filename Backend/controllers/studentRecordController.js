@@ -12,6 +12,9 @@ const getMyActivities = async (req, res) => {
 
 const addActivity = async (req, res) => {
     try {
+
+        console.log('Body:', req.body)
+        console.log('Files:', req.files)
         const recordData = {
             prn: req.body.prn,
             type: req.body.type,
@@ -23,7 +26,9 @@ const addActivity = async (req, res) => {
             start_date: req.body.start_date,
             end_date: req.body.end_date,
             description: req.body.description,
-            document_url: req.file ? `/uploads/${req.file.filename}` : req.body.document_url,
+            document_urls: req.files && req.files.length > 0 
+    ? req.files.map(f => `uploads/${f.filename}`)
+    : [],
         }
 
         const autoTags = generateTags(recordData)
@@ -31,6 +36,15 @@ const addActivity = async (req, res) => {
         recordData.tags = [...new Set([...autoTags, ...customTags])]
 
         const activity = new StudentRecord(recordData)
+
+// History 
+activity.history = [{
+    action: 'Added',
+    timestamp: new Date(),
+    note: 'Activity submitted for verification'
+}]
+
+await activity.save()
         await activity.save()
         res.json({ success: true, message: 'Activity added!', data: activity })
     } catch (error) {

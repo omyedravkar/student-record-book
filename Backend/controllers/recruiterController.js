@@ -5,7 +5,7 @@ const searchStudents = async (req, res) => {
     try {
         const { type, minCgpa } = req.query
 
-        // Step 1 —  VERIFIED activities 
+        // Step 1 —  VERIFIED activities
         let activities = await StudentRecord.find({ status: 'VERIFIED' })
 
         // Step 2 — Type filter
@@ -35,7 +35,7 @@ const searchStudents = async (req, res) => {
             return (studentB?.cgpa || 0) - (studentA?.cgpa || 0)
         })
 
-        // Step 5 — CGPA, name add in result 
+        // Step 5 — CGPA, name -add in result 
         const result = activities.map(a => {
             const student = erpAll.find(s => s.prn === a.prn)
             return {

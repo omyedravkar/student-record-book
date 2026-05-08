@@ -1,6 +1,7 @@
 const express = require('express')
 const router = express.Router()
-const upload = require('../config/uploads')
+// const upload = require('../config/uploads')
+const upload = require('../middleware/upload')
 const {
     addActivity,
     getMyActivities,
@@ -12,7 +13,7 @@ const {
 } = require('../controllers/studentRecordController')
 
 router.get('/my', getMyActivities)
-router.post('/add', upload.single('document'), addActivity)
+router.post('/add', upload.any(), addActivity)
 router.put('/edit/:id', editActivity)
 router.delete('/delete/:id', deleteActivity)
 router.get('/verified', getVerifiedActivities)

@@ -19,7 +19,7 @@ const studentRecordSchema = new mongoose.Schema({
   start_date: { type: Date },
   end_date: { type: Date },
   description: { type: String },
-  document_url: { type: String },
+  document_urls: [{ type: String }],
   tags: [{ type: String }],
   status: { 
     type: String, 

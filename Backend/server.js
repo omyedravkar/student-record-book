@@ -9,9 +9,9 @@ setServers(["1.1.1.1", "8.8.8.8"]);
 const app = express();
 app.use(express.json());
 app.use(cors());
-const path = require('path');
-app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
+const path = require('path')
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')))
 
 const authRoutes = require('./routes/auth');
 const studentRecordRoutes = require('./routes/studentRecord');
